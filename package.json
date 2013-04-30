@@ -1,0 +1,28 @@
+{
+  "name": "version",
+  "version": "0.0.1",
+  "description": "A NPM and Bower module version handler",
+  "main": "version.js",
+  "scripts": {
+    "test": "mocha tests.js"
+  },
+  "repository": "",
+  "keywords": [
+    "semver",
+    "bower",
+    "npm",
+    "version"
+  ],
+  "author": "Mikael Brevik (@mikaelbrevik)",
+  "license": "MIT",
+  "bin": {
+    "version": "./bin/version"
+  },
+  "dependencies": {
+    "semver": "~1.1.4",
+    "async": "~0.2.7"
+  },
+  "devDependenceies": {
+    "mocha": "~1.9.0"
+  }
+}

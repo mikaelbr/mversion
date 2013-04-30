@@ -1,0 +1,78 @@
+#!/usr/bin/env node
+
+var argv = process.argv.slice(2)
+  , version = require('../version')
+  ;
+
+
+var commitMessage = null
+  , defaultMessage = "v%s"
+  ;
+
+// Check if get
+if (argv.length === 0) {
+  // is get
+
+  version.get(function (err, data) {
+    if (err) {
+      console.error(err);
+      return;
+    }
+
+    data['package.json'] && console.log('* package.json', data['package.json']);
+    data['component.json'] && console.log('* component.json', data['component.json']);
+  });
+  return;
+}
+
+if (argv[0] === '-h' || argv[0] === '--help' || argv[0] === '?') {
+  return usage();
+}
+
+// Check for git:
+if (argv.length > 1 && argv[1] === "-m") {
+  if (argv[2]) {
+    commitMessage = argv[2];
+  } else {
+    commitMessage = defaultMessage;
+  }
+}
+
+
+version.update(argv[0], commitMessage, function (err, data) {
+  if (err) {
+    console.error(err);
+    return;
+  }
+
+  console.log('New Version:', data.newVersion);
+  console.log(data.message);
+});
+
+function usage () {
+  console.log(["Usage: version [ <newversion> | major | minor | patch | build ] [ -m <optional message> ] "
+              ,"(run in package dir)."
+              ,""
+              ,"Update module version in both package.json and component.json."
+              ,""
+              ,"Run without arguments to get current version."
+              ,""
+              ,"# Update version"
+              ,"Update version by defining new semver valid version "
+              ,"or a release string (major, minor, patch, build)."
+              ,"--"
+              ,"Ex: \"version minor\""
+              ,"Ex: \"version 1.0.1-beta\""
+              ,"--"
+              ,""
+              ,"# Git"
+              ,"Use -m to auto commit and tag. Apply optional message and "
+              ,"use '%s' as placeholder for the updated version. Default "
+              ,"message is 'v%s' where %s is replaced with new version."
+              ,"--"
+              ,"Ex: \"version minor -m\""
+              ,"Ex: \"version minor -m 'Bumped to v%s'\""
+              ,"--"
+              ,""
+              ].join("\n"))
+}

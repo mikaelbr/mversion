@@ -1,0 +1,10 @@
+{
+  "name": "foo",
+  "version": "0.0.1",
+  "description": "A packaged foo fooer for fooing foos",
+  "main": "foo.js",
+  "man": [
+    "./man/foo.1",
+    "./man/bar.1"
+  ]
+}
