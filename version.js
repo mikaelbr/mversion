@@ -221,6 +221,7 @@ exports.update = function (ver, commitMessage, callback) {
           return void 0;
         }
 
+        ret.message += "\nCommited to git and created tag v" + validVer;
         callback(null, ret);
       });
     });
