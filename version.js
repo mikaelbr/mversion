@@ -81,7 +81,7 @@ var makeCommit = function (files, message, newVer, callback) {
       , extra = {env: process.env}
       ;
 
-    message = message.replace('%s', newVer);
+    message = message.replace('%s', newVer).replace('"', '').replace("'", '');
 
     exec(git + " " + [ "status", "--porcelain" ].join(' '), extra, function (er, stdout, stderr) {
 
@@ -106,11 +106,11 @@ var makeCommit = function (files, message, newVer, callback) {
           }
 
           , function (done) {
-            exec(git + " " + ["commit", "-m", message].join(' '), extra, done);
+            exec(git + " " + ["commit", "-m", "\"" + message + "\""].join(' '), extra, done);
           }
 
           , function (done) {
-            exec(git + " " + ["tag", "-a", "v" + newVer, "-m", message].join(' '), extra, done);
+            exec(git + " " + ["tag", "-a", "v" + newVer, "-m", "\"" + message + "\""].join(' '), extra, done);
           }
         ]
         , callback
