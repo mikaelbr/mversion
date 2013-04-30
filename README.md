@@ -9,7 +9,7 @@ Also works with only package.json or component.json.
 ## Usage CLI
 
 ```
-npm install -g version
+npm install -g mversion
 ```
 
 ```
