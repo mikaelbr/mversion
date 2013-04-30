@@ -72,7 +72,7 @@ Commited to git and created tag v1.0.0-rc1
 npm install version
 ```
 
-```
+```javascript
 var version = require('version');
 
 version.get(function (err, data) {
