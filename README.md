@@ -1,7 +1,7 @@
 mversion -- A NPM and Bower module version handler
 ===
 
-Imitates ```[npm version](https://npmjs.org/doc/version.html)``` to also work on component.json. For those times you have both package.json and component.json and
+Imitates [```npm version```](https://npmjs.org/doc/version.html) to also work on component.json. For those times you have both package.json and component.json and
 want to easily bump the version and optionally commit and create a tag. 
 
 Also works with only package.json or component.json. 
