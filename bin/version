@@ -50,7 +50,7 @@ version.update(argv[0], commitMessage, function (err, data) {
 });
 
 function usage () {
-  console.log(["Usage: version [ <newversion> | major | minor | patch | build ] [ -m <optional message> ] "
+  console.log(["Usage: mversion [ <newversion> | major | minor | patch | build ] [ -m <optional message> ] "
               ,"(run in package dir)."
               ,""
               ,"Update module version in both package.json and component.json."
@@ -61,8 +61,8 @@ function usage () {
               ,"Update version by defining new semver valid version "
               ,"or a release string (major, minor, patch, build)."
               ,"--"
-              ,"Ex: \"version minor\""
-              ,"Ex: \"version 1.0.1-beta\""
+              ,"Ex: \"mversion minor\""
+              ,"Ex: \"mversion 1.0.1-beta\""
               ,"--"
               ,""
               ,"# Git"
@@ -70,8 +70,8 @@ function usage () {
               ,"use '%s' as placeholder for the updated version. Default "
               ,"message is 'v%s' where %s is replaced with new version."
               ,"--"
-              ,"Ex: \"version minor -m\""
-              ,"Ex: \"version minor -m 'Bumped to v%s'\""
+              ,"Ex: \"mversion minor -m\""
+              ,"Ex: \"mversion minor -m 'Bumped to v%s'\""
               ,"--"
               ,""
               ].join("\n"))

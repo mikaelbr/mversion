@@ -1,5 +1,5 @@
 {
-  "name": "version",
+  "name": "mversion",
   "version": "0.0.1",
   "description": "A NPM and Bower module version handler",
   "main": "version.js",
@@ -16,7 +16,7 @@
   "author": "Mikael Brevik (@mikaelbrevik)",
   "license": "MIT",
   "bin": {
-    "version": "./bin/version"
+    "mversion": "./bin/version"
   },
   "dependencies": {
     "semver": "~1.1.4",
