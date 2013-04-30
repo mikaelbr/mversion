@@ -217,7 +217,7 @@ exports.update = function (ver, commitMessage, callback) {
 
       makeCommit(files, commitMessage, validVer, function (err) {
         if (err) {
-          callback(err);
+          callback(err, ret);
           return void 0;
         }
 

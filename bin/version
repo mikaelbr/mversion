@@ -40,13 +40,17 @@ if (argv.length > 1 && argv[1] === "-m") {
 
 
 version.update(argv[0], commitMessage, function (err, data) {
-  if (err) {
+  if (err && !data) {
     console.error(err);
     return;
   }
 
   console.log('New Version:', data.newVersion);
   console.log(data.message);
+
+  if (err) {
+    console.log("Error:", err.message);
+  }
 });
 
 function usage () {
