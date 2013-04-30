@@ -86,20 +86,12 @@ var makeCommit = function (message, newVer, callback) {
     exec(git + " " + [ "status", "--porcelain" ].join(' '), extra, function (er, stdout, stderr) {
 
       var lines = stdout.trim().split("\n").filter(function (line) {
-        console.log(line);
-        console.log(line.trim(), line.match(/^\?\? /));
-        return line.trim() && line.match(/^\?\? /)
-      })
-
-      console.log("---");
-      console.log(lines)
-      var lines = lines.map(function (line) {
+        return line.trim() && !line.match(/^\?\? /)
+      }).map(function (line) {
         return line.trim()
       });
-      console.log('herra?');
-      console.log(lines)
+
       if (lines.length) {
-        console.log("HEER");
         return callback(new Error("Git working directory not clean.\n"+lines.join("\n")));
       }
 
