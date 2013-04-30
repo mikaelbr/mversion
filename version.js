@@ -106,6 +106,7 @@ var makeCommit = function (files, message, newVer, callback) {
           }
 
           , function (done) {
+            console.log(git + " " + ["commit", "-m", "\"" + message + "\""].join(' '))
             exec(git + " " + ["commit", "-m", "\"" + message + "\""].join(' '), extra, done);
           }
 
