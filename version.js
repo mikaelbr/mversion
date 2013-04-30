@@ -84,7 +84,7 @@ var makeCommit = function (files, message, newVer, callback) {
     message = message.replace('%s', newVer).replace('"', '').replace("'", '');
 
     exec(git + " " + [ "status", "--porcelain" ].join(' '), extra, function (er, stdout, stderr) {
-
+      // makeCommit parly inspired and taken from NPM version module
       var lines = stdout.trim().split("\n").filter(function (line) {
         return line.trim() && !line.match(/^\?\? /) 
                   && line.indexOf('package.json') === -1 
@@ -96,8 +96,6 @@ var makeCommit = function (files, message, newVer, callback) {
       if (lines.length) {
         return callback(new Error("Git working directory not clean.\n"+lines.join("\n")));
       }
-
-
 
       async.series(
         [ 
