@@ -76,7 +76,7 @@ exports._saveFiles = function (pkg, cpt, callback) {
 };
 
 
-var makeCommit = function (message, newVer, callback) {
+var makeCommit = function (files, message, newVer, callback) {
     var git = 'git'
       , extra = {env: process.env}
       ;
@@ -95,10 +95,12 @@ var makeCommit = function (message, newVer, callback) {
         return callback(new Error("Git working directory not clean.\n"+lines.join("\n")));
       }
 
+
+
       async.series(
         [ 
           function (done) {
-            exec(git + " " + ["add", "package.json, component.json"].join(' '), extra, done);
+            exec(git + " add " + files.join(' '), extra, done);
           }
 
           , function (done) {
@@ -179,7 +181,8 @@ exports.update = function (ver, commitMessage, callback) {
     }
 
     exports._saveFiles(pkg, cpt, function (err, data) {
-      var ret = {newVersion: validVer, versions: {}, message: []};
+      var ret = {newVersion: validVer, versions: {}, message: []}
+        , files = [];
       
 
       if (err) {
@@ -197,10 +200,12 @@ exports.update = function (ver, commitMessage, callback) {
 
       if (pkg && pkg.version) {
         ret.versions['package.json'] = pkg.version;
+        files.push('package.json');
       }
 
       if (cpt && cpt.version) {
         ret.versions['component.json'] = cpt.version;
+        files.push('component.json');
       }
 
       if (!commitMessage) {
@@ -208,7 +213,7 @@ exports.update = function (ver, commitMessage, callback) {
         return void 0;
       }
 
-      makeCommit(commitMessage, validVer, function (err) {
+      makeCommit(files, commitMessage, validVer, function (err) {
         if (err) {
           callback(err);
           return void 0;
