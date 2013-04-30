@@ -86,7 +86,9 @@ var makeCommit = function (files, message, newVer, callback) {
     exec(git + " " + [ "status", "--porcelain" ].join(' '), extra, function (er, stdout, stderr) {
 
       var lines = stdout.trim().split("\n").filter(function (line) {
-        return line.trim() && !line.match(/^\?\? /)
+        return line.trim() && !line.match(/^\?\? /) 
+                  && line.indexOf('package.json') === -1 
+                  && line.indexOf('component.json') === -1
       }).map(function (line) {
         return line.trim()
       });
