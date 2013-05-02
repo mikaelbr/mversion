@@ -15,7 +15,7 @@ if (argv.length === 0) {
 
   version.get(function (err, data) {
     if (err) {
-      console.error(err);
+      console.error("Failed:", err.message);
       return;
     }
 
@@ -41,7 +41,7 @@ if (argv.length > 1 && argv[1] === "-m") {
 
 version.update(argv[0], commitMessage, function (err, data) {
   if (err && !data) {
-    console.error(err);
+    console.error("Failed:", err.message);
     return;
   }
 
