@@ -13,7 +13,7 @@ exports._loadFiles = function (callback) {
     return function (done) {
       fs.readFile(path.join(process.cwd(), file), function (err, data) {
         if (err) {
-          done(new Error('Not found'));
+          done(null, null);
           return void 0;
         }
         done(null, {
@@ -23,11 +23,13 @@ exports._loadFiles = function (callback) {
       });
     };
   }), function (err, data) {
-    if (!data.length || data[0] === undefined) {
+    data = data.filter(function (file) {
+      return !!file;
+    });
+    if (!data.length || data[0] === null) {
       callback(new Error("At least one .json file must exist."));
       return void 0;
     }
-
     data.forEach(function (fileData) {
       try {
         fileData.data = JSON.parse(fileData.data)
@@ -128,7 +130,7 @@ exports.update = function (ver, commitMessage, callback) {
       callback(err);
       return void 0;
     }
-    
+
     var currentVer = result[0].data ? result[0].data.version : undefined
       , versionList = {}
       ;
