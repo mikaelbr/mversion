@@ -4,7 +4,7 @@
   "description": "A NPM and Bower module version handler",
   "main": "version.js",
   "scripts": {
-    "test": "mocha tests.js"
+    "test": "mocha tests/*_test.js"
   },
   "repository": "https://github.com/mikaelbr/mversion",
   "keywords": [
