@@ -4,33 +4,41 @@ var version = require('./version')
   ;
 
 var tmpLoad = version._loadFiles
-  , tmpSave = version._saveFiles;
+  , tmpSave = version._saveFiles
+  ;
 
 
 var setupLoadSpy = function (v1, v2) {
   version._loadFiles = function (callback) {
-    var ret = {};
+    var ret = [];
 
     if (v1) {
-      ret.pkg = {
-        version: v1
-      };
+      ret.push({
+          file: 'package.json'
+        , data: {
+          version: v1
+        }
+      });
     }
 
     if (v2) {
-      ret.cpt = {
-        version: v2
-      };
+      ret.push({
+          file: 'component.json'
+        , data: {
+          version: v2
+        }
+      });
     }
 
     callback(null, ret);
   };
 };
 
-version._saveFiles = function (pkg, cpt, callback) {
+version._saveFiles = function (result, callback) {
   var ret = [];
-  if (pkg) ret.push("Updated package.json");
-  if (cpt) ret.push("Updated component.json");
+  result.forEach(function (file) {
+    ret.push('Updated ' + file.file);
+  });
   callback(null, ret);
 };
 
@@ -198,3 +206,7 @@ describe('Update', function () {
   });
 
 });
+
+// Reset version spies
+version._loadFiles = tmpLoad;
+version._saveFiles = tmpSave;

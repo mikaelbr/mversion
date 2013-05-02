@@ -6,73 +6,47 @@ var semver = require('semver')
   , exec = require("child_process").exec
   ;
 
+exports._files = ["package.json", "component.json"];
+
 exports._loadFiles = function (callback) {
-  async.parallel({
-    'pkg': function (done) {
-      fs.readFile(path.join(process.cwd(), "package.json"), function (err, data) {
-        done(null, data);
+  async.parallel(exports._files.map(function (file) {
+    return function (done) {
+      fs.readFile(path.join(process.cwd(), file), function (err, data) {
+        done(null, {
+            file: file
+          , data: data
+        });
       });
-    }
-
-    , 'cpt': function (done) {
-      fs.readFile(path.join(process.cwd(), "component.json"), function (err, data) {
-        done(null, data);
-      });
-    }
-  }, function (err, result) {
-    var ret = {};
-
-    if (!result.pkg && !result.cpt) {
-      callback(new Error("Need one of package.json or component.json"));
+    };
+  }), function (err, data) {
+    if (!data.length) {
+      callback(new Error("At least one .json file must exist."));
       return void 0;
     }
 
-    try {
-      ret.pkg = JSON.parse(result.pkg)
-    } catch (er) {
-      ret.pkg = null;
-    }
+    data.forEach(function (fileData) {
+      try {
+        fileData.data = JSON.parse(fileData.data)
+      } catch (er) { /* No handling */ }
+    });
 
-    try {
-      ret.cpt = JSON.parse(result.cpt)
-    } catch (er) {
-      ret.cpt = null;
-    }
-
-    callback(null, ret);
+    callback(null, data);
   });
 };
 
-exports._saveFiles = function (pkg, cpt, callback) {
+exports._saveFiles = function (fileData, callback) {
   // Save package/component file. 
-  async.parallel({
-    'pkg': function (done) {
-      if (!pkg) {
-        return done(null, null);
-      }
-
-      fs.writeFile( path.join(process.cwd(), "package.json"), 
-          new Buffer(JSON.stringify(pkg, null, 2) + "\n"), function (err) {
+  async.parallel(fileData.map(function (file) {
+    return function (done) {
+      fs.writeFile( path.join(process.cwd(), file.file), 
+          new Buffer(JSON.stringify(file.data, null, 2) + "\n"), function (err) {
             if (err) {
               return done(err);
             }
-            done(null, "Updated package.json");
+            done(null, "Updated " + file.file);
       });
-    }
-
-    , 'cpt': function (done) {
-      if (!cpt) {
-        return done(null, null);
-      }
-      fs.writeFile( path.join(process.cwd(), "component.json"), 
-          new Buffer(JSON.stringify(cpt, null, 2) + "\n"), function (err) {
-            if (err) {
-              return done(err);
-            }
-            done(null, "Updated component.json");
-      });
-    }
-  }, callback);
+    };
+  }), callback);
 };
 
 
@@ -119,23 +93,14 @@ var makeCommit = function (files, message, newVer, callback) {
 
 exports.get = function (callback) {
   exports._loadFiles(function(err, result) {
-    var v1, v2, ret = {};
-
+    var ret = {};
     if (err) {
       callback(err);
       return void 0;
     }
-
-    v1 = result.pkg;
-    v2 = result.cpt;
-
-    if (v1 && v1.version) {
-      ret['package.json'] = v1.version;
-    }
-
-    if (v2 && v2.version) {
-      ret['component.json'] = v2.version;
-    }
+    result.forEach(function (file) {
+      ret[file.file] = file.data.version;
+    });
 
     callback(null, ret);
   });
@@ -155,9 +120,9 @@ exports.update = function (ver, commitMessage, callback) {
   }
 
   exports._loadFiles(function(err, result) {
-    var pkg = result.pkg
-      , cpt = result.cpt
-      , currentVer = pkg ? pkg.version : cpt.version;
+    var currentVer = result[0].data ? result[0].data.version : undefined
+      , versionList = {}
+      ;
 
     if (err) {
       callback(err);
@@ -172,40 +137,24 @@ exports.update = function (ver, commitMessage, callback) {
       callback(new Error('No valid version given.'));
       return void 0;
     }
+    result.forEach(function (file) {
+      if (file.data) {
+        file.data.version = validVer;
+        versionList[file.file] = validVer;
+      }
+    });
 
-    if (pkg && pkg.version) {
-      pkg.version = validVer;
-    }
-    if (cpt && cpt.version) {
-      cpt.version = validVer;
-    }
-
-    exports._saveFiles(pkg, cpt, function (err, data) {
-      var ret = {newVersion: validVer, versions: {}, message: []}
+    exports._saveFiles(result, function (err, data) {
+      var ret = { 
+          newVersion: validVer
+          , versions: versionList
+          , message: data.join('\n')
+        }
         , files = [];
-      
 
       if (err) {
         callback(err);
         return void 0;
-      }
-
-      if (data.pkg) {
-        ret.message.push(data.pkg);
-      }
-      if (data.cpt) {
-        ret.message.push(data.cpt);
-      }
-      ret.message = ret.message.join("\n");
-
-      if (pkg && pkg.version) {
-        ret.versions['package.json'] = pkg.version;
-        files.push('package.json');
-      }
-
-      if (cpt && cpt.version) {
-        ret.versions['component.json'] = cpt.version;
-        files.push('component.json');
       }
 
       if (!commitMessage) {
