@@ -12,6 +12,10 @@ exports._loadFiles = function (callback) {
   async.parallel(exports._files.map(function (file) {
     return function (done) {
       fs.readFile(path.join(process.cwd(), file), function (err, data) {
+        if (err) {
+          done(new Error('Not found'));
+          return void 0;
+        }
         done(null, {
             file: file
           , data: data
@@ -19,7 +23,7 @@ exports._loadFiles = function (callback) {
       });
     };
   }), function (err, data) {
-    if (!data.length) {
+    if (!data.length || data[0] === undefined) {
       callback(new Error("At least one .json file must exist."));
       return void 0;
     }
@@ -120,14 +124,14 @@ exports.update = function (ver, commitMessage, callback) {
   }
 
   exports._loadFiles(function(err, result) {
-    var currentVer = result[0].data ? result[0].data.version : undefined
-      , versionList = {}
-      ;
-
     if (err) {
       callback(err);
       return void 0;
     }
+    
+    var currentVer = result[0].data ? result[0].data.version : undefined
+      , versionList = {}
+      ;
 
     if (validVer === null) {
       validVer = semver.inc(currentVer, ver);
