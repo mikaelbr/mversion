@@ -114,7 +114,8 @@ exports.get = function (callback) {
 
 
 exports.update = function (ver, commitMessage, callback) {
-  var validVer = semver.valid(ver);
+  var validVer = semver.valid(ver)
+    , files = [];
   ver = ver.toLowerCase();
 
   if (!callback && commitMessage && typeof commitMessage  === 'function') {
@@ -147,6 +148,7 @@ exports.update = function (ver, commitMessage, callback) {
       if (file.data) {
         file.data.version = validVer;
         versionList[file.file] = validVer;
+        files.push(file.file);
       }
     });
 
@@ -155,8 +157,7 @@ exports.update = function (ver, commitMessage, callback) {
           newVersion: validVer
           , versions: versionList
           , message: data.join('\n')
-        }
-        , files = [];
+        };
 
       if (err) {
         callback(err);
