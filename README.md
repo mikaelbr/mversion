@@ -86,9 +86,10 @@ mversion.get(function (err, data) {
 
 mversion.update('minor', function (err, data) { })
 mversion.update('major', function (err, data) { })
+mversion.update('major', 'Some commit message for version %s', function (err, data) { }) // Will commit/tag
 mversion.update('patch', function (err, data) { })
 mversion.update('build', function (err, data) { })
-mversion.update('0.0.1', function (err, data) { })
+mversion.update('0.0.1', 'Bumping version', function (err, data) { }) // Will commit/tag
 mversion.update('v1.0.1', function (err, data) { })
 mversion.update('v1.0.1-beta', function (err, data) { })
 mversion.update('v1.0.1-010988', function (err, data) { })
