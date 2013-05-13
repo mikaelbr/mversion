@@ -6,7 +6,7 @@ var semver = require('semver')
   , exec = require("child_process").exec
   ;
 
-exports._files = ["package.json", "component.json"];
+exports._files = ["package.json", "component.json", "bower.json"];
 
 exports._loadFiles = function (callback) {
   async.parallel(exports._files.map(function (file) {
@@ -41,10 +41,10 @@ exports._loadFiles = function (callback) {
 };
 
 exports._saveFiles = function (fileData, callback) {
-  // Save package/component file. 
+  // Save package/component/bower file.
   async.parallel(fileData.map(function (file) {
     return function (done) {
-      fs.writeFile( path.join(process.cwd(), file.file), 
+      fs.writeFile( path.join(process.cwd(), file.file),
           new Buffer(JSON.stringify(file.data, null, 2) + "\n"), function (err) {
             if (err) {
               return done(err);
@@ -66,9 +66,10 @@ var makeCommit = function (files, message, newVer, callback) {
     exec(git + " " + [ "status", "--porcelain" ].join(' '), extra, function (er, stdout, stderr) {
       // makeCommit parly inspired and taken from NPM version module
       var lines = stdout.trim().split("\n").filter(function (line) {
-        return line.trim() && !line.match(/^\?\? /) 
-                  && line.indexOf('package.json') === -1 
+        return line.trim() && !line.match(/^\?\? /)
+                  && line.indexOf('package.json') === -1
                   && line.indexOf('component.json') === -1
+                  && line.indexOf('bower.json') === -1
       }).map(function (line) {
         return line.trim()
       });
@@ -78,7 +79,7 @@ var makeCommit = function (files, message, newVer, callback) {
       }
 
       async.series(
-        [ 
+        [
           function (done) {
             exec(git + " add " + files.join(' '), extra, done);
           }
@@ -153,7 +154,7 @@ exports.update = function (ver, commitMessage, callback) {
     });
 
     exports._saveFiles(result, function (err, data) {
-      var ret = { 
+      var ret = {
           newVersion: validVer
           , versions: versionList
           , message: data.join('\n')
