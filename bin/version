@@ -19,9 +19,11 @@ if (argv.length === 0) {
       return;
     }
 
-    data['package.json'] && console.log('* package.json', data['package.json']);
-    data['component.json'] && console.log('* component.json', data['component.json']);
-    data['bower.json'] && console.log('* bower.json', data['bower.json']);
+    for(file in data) {
+      if (data[file]) {
+        console.log('* ' + file + ': ' + data[file]);
+      }
+    }
   });
   return;
 }

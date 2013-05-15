@@ -41,7 +41,7 @@ exports._loadFiles = function (callback) {
 };
 
 exports._saveFiles = function (fileData, callback) {
-  // Save package/component/bower file.
+  // Save module file.
   async.parallel(fileData.map(function (file) {
     return function (done) {
       fs.writeFile( path.join(process.cwd(), file.file),
@@ -59,6 +59,7 @@ exports._saveFiles = function (fileData, callback) {
 var makeCommit = function (files, message, newVer, callback) {
     var git = 'git'
       , extra = {env: process.env}
+      fileRegexTest = new RegExp(exports._files.join('|').replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$]/g, "\\$&"));
       ;
 
     message = message.replace('%s', newVer).replace('"', '').replace("'", '');
@@ -66,10 +67,7 @@ var makeCommit = function (files, message, newVer, callback) {
     exec(git + " " + [ "status", "--porcelain" ].join(' '), extra, function (er, stdout, stderr) {
       // makeCommit parly inspired and taken from NPM version module
       var lines = stdout.trim().split("\n").filter(function (line) {
-        return line.trim() && !line.match(/^\?\? /)
-                  && line.indexOf('package.json') === -1
-                  && line.indexOf('component.json') === -1
-                  && line.indexOf('bower.json') === -1
+        return line.trim() && !line.match(/^\?\? /) && !fileRegexTest.test(line);
       }).map(function (line) {
         return line.trim()
       });
