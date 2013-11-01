@@ -8,6 +8,10 @@ var semver = require('semver')
 
 exports._files = ["package.json", "component.json", "bower.json"];
 
+var gitApp = 'git'
+  , gitExtra = {env: process.env}
+  ;
+
 exports._loadFiles = function (callback) {
   async.parallel(exports._files.map(function (file) {
     return function (done) {
@@ -55,44 +59,42 @@ exports._saveFiles = function (fileData, callback) {
   }), callback);
 };
 
+var doOnCleanRepository = function (callback) {
+  var fileRegexTest = new RegExp(exports._files.join('|').replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$]/g, "\\$&"));
+  exec(gitApp + " " + [ "status", "--porcelain" ].join(' '), gitExtra, function (er, stdout, stderr) {
+    // makeCommit parly inspired and taken from NPM version module
+    var lines = stdout.trim().split("\n").filter(function (line) {
+      return line.trim() && !line.match(/^\?\? /) && !fileRegexTest.test(line);
+    }).map(function (line) {
+      return line.trim()
+    });
+
+    if (lines.length) {
+      return callback(new Error("Git working directory not clean.\n"+lines.join("\n")));
+    }
+    return callback();
+  });
+};
 
 var makeCommit = function (files, message, newVer, callback) {
-    var git = 'git'
-      , extra = {env: process.env}
-      fileRegexTest = new RegExp(exports._files.join('|').replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$]/g, "\\$&"));
-      ;
-
     message = message.replace('%s', newVer).replace('"', '').replace("'", '');
 
-    exec(git + " " + [ "status", "--porcelain" ].join(' '), extra, function (er, stdout, stderr) {
-      // makeCommit parly inspired and taken from NPM version module
-      var lines = stdout.trim().split("\n").filter(function (line) {
-        return line.trim() && !line.match(/^\?\? /) && !fileRegexTest.test(line);
-      }).map(function (line) {
-        return line.trim()
-      });
+    async.series(
+      [
+        function (done) {
+          exec(gitApp + " add " + files.join(' '), gitExtra, done);
+        }
 
-      if (lines.length) {
-        return callback(new Error("Git working directory not clean.\n"+lines.join("\n")));
-      }
+        , function (done) {
+          exec(gitApp + " " + ["commit", "-m", "\"" + message + "\""].join(' '), gitExtra, done);
+        }
 
-      async.series(
-        [
-          function (done) {
-            exec(git + " add " + files.join(' '), extra, done);
-          }
-
-          , function (done) {
-            exec(git + " " + ["commit", "-m", "\"" + message + "\""].join(' '), extra, done);
-          }
-
-          , function (done) {
-            exec(git + " " + ["tag", "-a", "v" + newVer, "-m", "\"" + message + "\""].join(' '), extra, done);
-          }
-        ]
-        , callback
-      );
-    });
+        , function (done) {
+          exec(gitApp + " " + ["tag", "-a", "v" + newVer, "-m", "\"" + message + "\""].join(' '), gitExtra, done);
+        }
+      ]
+      , callback
+    );
   }
 ;
 
@@ -125,13 +127,22 @@ exports.update = function (ver, commitMessage, callback) {
     callback = function () { };
   }
 
-  exports._loadFiles(function(err, result) {
+  async.series([
+      function (done) {
+        if (commitMessage) {
+          return doOnCleanRepository(done);
+        }
+        return done();
+      }
+    , exports._loadFiles
+  ], function(err, results) {
     if (err) {
       callback(err);
       return void 0;
     }
 
-    var currentVer = result[0].data ? result[0].data.version : undefined
+    var result = results[1]
+      , currentVer = result[0].data ? result[0].data.version : undefined
       , versionList = {}
       ;
 
@@ -143,6 +154,7 @@ exports.update = function (ver, commitMessage, callback) {
       callback(new Error('No valid version given.'));
       return void 0;
     }
+
     result.forEach(function (file) {
       if (file.data) {
         file.data.version = validVer;
