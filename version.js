@@ -6,7 +6,7 @@ var semver = require('semver')
   , exec = require("child_process").exec
   ;
 
-exports._files = ["package.json", "component.json", "bower.json"];
+exports._files = ["package.json", "component.json", "bower.json", "manifest.json"];
 
 var gitApp = 'git'
   , gitExtra = {env: process.env}
