@@ -1,4 +1,4 @@
-mversion -- A NPM and Bower module version handler
+mversion - A cross packaging manager module version handler
 ===
 
 Imitates [```npm version```](https://npmjs.org/doc/version.html) to
