@@ -1,10 +1,11 @@
 mversion -- A NPM and Bower module version handler
 ===
 
-Imitates [```npm version```](https://npmjs.org/doc/version.html) to also work on component.json. For those times you have both package.json and component.json and
-want to easily bump the version and optionally commit and create a tag. 
-
-Also works with only package.json or component.json. 
+Imitates [```npm version```](https://npmjs.org/doc/version.html) to
+also work on other packaging files. For those times you have either
+have multiple packaging files (like ```bower.json```, ```component.json```,
+```manifest.json```) or just not a ```package.json``` file.
+```mversion``` can easily bump your version and optionally commit and create a tag.
 
 ## Usage CLI
 
@@ -18,7 +19,8 @@ $ mversion -h
 Usage: mversion [ <newversion> | major | minor | patch | build ] [ -m <optional message> ]
 (run in package dir).
 
-Update module version in both package.json and component.json.
+Update module version in either or all of package.json,
+component.json, bower.json, manifest.json.
 
 Run without arguments to get current version.
 
@@ -54,6 +56,7 @@ $ mversion 0.0.5 -m
 New Version: 0.0.5
 Updated package.json
 Updated component.json
+Updated manifest.json
 Commited to git and created tag v0.0.5
 ```
 
