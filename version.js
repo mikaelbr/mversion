@@ -113,11 +113,31 @@ exports.get = function (callback) {
   });
 };
 
+var isPackageFile = exports.isPackageFile = function (file) {
+  return exports._files.indexOf(file) !== -1;
+};
+
+var updateJSON = exports.updateJSON = function (json, ver) {
+  var validVer = semver.valid(ver);
+  ver = ver.toLowerCase();
+  json = json || {};
+  var currentVer = json.version;
+
+  if (validVer === null) {
+    validVer = semver.inc(currentVer, ver);
+  }
+
+  if (validVer === null) {
+    return false;
+  }
+
+  json.version = validVer;
+  return json;
+};
+
 
 exports.update = function (ver, commitMessage, callback) {
-  var validVer = semver.valid(ver)
-    , files = [];
-  ver = ver.toLowerCase();
+  var files = [];
 
   if (!callback && commitMessage && typeof commitMessage  === 'function') {
     callback = commitMessage;
@@ -142,18 +162,18 @@ exports.update = function (ver, commitMessage, callback) {
     }
 
     var result = results[1]
-      , currentVer = result[0].data ? result[0].data.version : undefined
+      , json = result[0]
       , versionList = {}
       ;
 
-    if (validVer === null) {
-      validVer = semver.inc(currentVer, ver);
-    }
+    var updated = updateJSON(json.data, ver);
 
-    if (validVer === null) {
+    if (!updated) {
       callback(new Error('No valid version given.'));
       return void 0;
     }
+
+    var validVer = updated.version;
 
     result.forEach(function (file) {
       if (file.data) {
