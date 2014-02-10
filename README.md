@@ -7,6 +7,13 @@ have multiple packaging files (like ```bower.json```, ```component.json```,
 ```manifest.json```) or just not a ```package.json``` file.
 ```mversion``` can easily bump your version and optionally commit and create a tag.
 
+## `mversion` file support
+- `package.json`
+- `npm-shrinkwrap.json`
+- `component.json`
+- `bower.json`
+- `manifest.json``
+
 ## Usage CLI
 
 ```
