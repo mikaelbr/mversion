@@ -1,6 +1,8 @@
 mversion - A cross packaging manager module version handler
 ===
 
+[![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][depstat-image]][depstat-url]
+
 Imitates [```npm version```](https://npmjs.org/doc/version.html) to
 also work on other packaging files. For those times you have either
 have multiple packaging files (like ```bower.json```, ```component.json```,
@@ -106,3 +108,11 @@ mversion.update('v1.0.1-beta', function (err, data) { })
 mversion.update('v1.0.1-010988', function (err, data) { })
 ```
 
+[npm-url]: https://npmjs.org/package/mversion
+[npm-image]: https://badge.fury.io/js/mversion.png
+
+[travis-url]: http://travis-ci.org/mikaelbr/mversion
+[travis-image]: https://secure.travis-ci.org/mikaelbr/mversion.png?branch=master
+
+[depstat-url]: https://david-dm.org/mikaelbr/mversion
+[depstat-image]: https://david-dm.org/mikaelbr/mversion.png
