@@ -12,7 +12,8 @@ have multiple packaging files (like ```bower.json```, ```component.json```,
 - `npm-shrinkwrap.json`
 - `component.json`
 - `bower.json`
-- `manifest.json``
+- `manifest.json`
+- `*.jquery.json` (jquery plugin files, e.g `plugin.jquery.json`)
 
 ## Usage CLI
 
