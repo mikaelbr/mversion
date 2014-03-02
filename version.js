@@ -1,102 +1,76 @@
-
 var semver = require('semver')
   , async = require('async')
-  , fs = require('fs')
   , path = require('path')
-  , exec = require("child_process").exec
+  , through = require('through2')
+  , minimatch = require('minimatch')
+  , fs = require('vinyl-fs')
+  , exec = require('child_process').exec
   ;
 
-exports._files = ["package.json", "npm-shrinkwrap.json", "component.json", "bower.json", "manifest.json"];
+exports._files = [
+    'package.json'
+  , 'npm-shrinkwrap.json'
+  , 'component.json'
+  , 'bower.json'
+  , 'manifest.json'
+];
 
 var gitApp = 'git'
-  , gitExtra = {env: process.env}
+  , gitExtra = { env: process.env }
   ;
 
-exports._loadFiles = function (callback) {
-  async.parallel(exports._files.map(function (file) {
-    return function (done) {
-      fs.readFile(path.join(process.cwd(), file), function (err, data) {
-        if (err) {
-          done(null, null);
-          return void 0;
-        }
-        done(null, {
-            file: file
-          , data: data
-        });
-      });
-    };
-  }), function (err, data) {
-    data = data.filter(function (file) {
-      return !!file;
-    });
-    if (!data.length || data[0] === null) {
-      callback(new Error("At least one .json file must exist."));
-      return void 0;
-    }
-    data.forEach(function (fileData) {
-      try {
-        fileData.data = JSON.parse(fileData.data)
-      } catch (er) { /* No handling */ }
-    });
-
-    callback(null, data);
-  });
+exports._loadFiles = function (cb) {
+  var files = fs.src(exports._files);
+  cb(null, files);
+  return files;
 };
 
-exports._saveFiles = function (fileData, callback) {
-  // Save module file.
-  async.parallel(fileData.map(function (file) {
-    return function (done) {
-      fs.writeFile( path.join(process.cwd(), file.file),
-          new Buffer(JSON.stringify(file.data, null, 2) + "\n"), function (err) {
-            if (err) {
-              return done(err);
-            }
-            done(null, "Updated " + file.file);
-      });
-    };
-  }), callback);
+var isPackageFile = exports.isPackageFile = function (file) {
+  for (var i = 0; i < exports._files.length; i++) {
+    if (minimatch(file, exports._files[i])) {
+      return true;
+    }
+  }
+  return false;
 };
 
 var doOnCleanRepository = function (callback) {
-  var fileRegexTest = new RegExp(exports._files.join('|').replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$]/g, "\\$&"));
-  exec(gitApp + " " + [ "status", "--porcelain" ].join(' '), gitExtra, function (er, stdout, stderr) {
+  exec(gitApp + ' ' + [ 'status', '--porcelain' ].join(' '), gitExtra, function (er, stdout, stderr) {
     // makeCommit parly inspired and taken from NPM version module
-    var lines = stdout.trim().split("\n").filter(function (line) {
-      return line.trim() && !line.match(/^\?\? /) && !fileRegexTest.test(line);
+    var lines = stdout.trim().split('\n').filter(function (line) {
+      var file = path.basename(line.replace(/.{1,2}\s+/, ''));
+      return line.trim() && !line.match(/^\?\? /) && !isPackageFile(line);
     }).map(function (line) {
       return line.trim()
     });
 
     if (lines.length) {
-      return callback(new Error("Git working directory not clean.\n"+lines.join("\n")));
+      return callback(new Error('Git working directory not clean.\n'+lines.join('\n')));
     }
     return callback();
   });
 };
 
 var makeCommit = function (files, message, newVer, callback) {
-    message = message.replace('%s', newVer).replace('"', '').replace("'", '');
+  message = message.replace('%s', newVer).replace('"', '').replace("'", '');
 
-    async.series(
-      [
-        function (done) {
-          exec(gitApp + " add " + files.join(' '), gitExtra, done);
-        }
+  async.series(
+    [
+      function (done) {
+        exec(gitApp + ' add ' + files.join(' '), gitExtra, done);
+      }
 
-        , function (done) {
-          exec(gitApp + " " + ["commit", "-m", "\"" + message + "\""].join(' '), gitExtra, done);
-        }
+      , function (done) {
+        exec(gitApp + ' ' + ['commit', '-m', '"' + message + '"'].join(' '), gitExtra, done);
+      }
 
-        , function (done) {
-          exec(gitApp + " " + ["tag", "-a", "v" + newVer, "-m", "\"" + message + "\""].join(' '), gitExtra, done);
-        }
-      ]
-      , callback
-    );
-  }
-;
+      , function (done) {
+        exec(gitApp + " " + ['tag', '-a', 'v' + newVer, '-m', '"' + message + '"'].join(' '), gitExtra, done);
+      }
+    ]
+    , callback
+  );
+};
 
 exports.get = function (callback) {
   exports._loadFiles(function(err, result) {
@@ -105,23 +79,23 @@ exports.get = function (callback) {
       callback(err);
       return void 0;
     }
-    result.forEach(function (file) {
-      ret[file.file] = file.data.version;
-    });
-
-    callback(null, ret);
+    result.pipe(through.obj(function (file, e, next) {
+      var contents = JSON.parse(file.contents.toString());
+      ret[path.basename(file.path)] = contents.version;
+      this.push(file);
+      next();
+    }, function () {
+      callback(null, ret);
+    }));
   });
 };
 
-var isPackageFile = exports.isPackageFile = function (file) {
-  return exports._files.indexOf(file) !== -1;
-};
-
-var updateJSON = exports.updateJSON = function (json, ver) {
-  var validVer = semver.valid(ver);
+var updateJSON = exports.updateJSON = function (obj, ver) {
   ver = ver.toLowerCase();
-  json = json || {};
-  var currentVer = json.version;
+
+  var validVer = semver.valid(ver);
+  obj = obj || {};
+  var currentVer = obj.version;
 
   if (validVer === null) {
     validVer = semver.inc(currentVer, ver);
@@ -131,10 +105,9 @@ var updateJSON = exports.updateJSON = function (json, ver) {
     return false;
   }
 
-  json.version = validVer;
-  return json;
+  obj.version = validVer;
+  return obj;
 };
-
 
 exports.update = function (ver, commitMessage, callback) {
   var files = [];
@@ -161,54 +134,59 @@ exports.update = function (ver, commitMessage, callback) {
       return void 0;
     }
 
-    var result = results[1]
-      , json = result[0]
+    var stream = results[1]
       , versionList = {}
+      , updated = null
+      , hasSet = false
       ;
 
-    var updated = updateJSON(json.data, ver);
+    stream.pipe(through.obj(function(file, e, next) {
+      var contents = JSON.parse(file.contents.toString());
 
-    if (!updated) {
-      callback(new Error('No valid version given.'));
-      return void 0;
-    }
-
-    var validVer = updated.version;
-
-    result.forEach(function (file) {
-      if (file.data) {
-        file.data.version = validVer;
-        versionList[file.file] = validVer;
-        files.push(file.file);
+      if (!hasSet) {
+        hasSet = true;
+        updated = updateJSON(contents, ver);
       }
-    });
 
-    exports._saveFiles(result, function (err, data) {
-      var ret = {
-          newVersion: validVer
-          , versions: versionList
-          , message: data.join('\n')
-        };
-
-      if (err) {
-        callback(err);
+      if (!updated) {
+        callback(new Error('No valid version given.'));
         return void 0;
       }
+
+      contents.version = updated.version;
+      file.contents = new Buffer(JSON.stringify(contents, null, 2));
+      versionList[path.basename(file.path)] = updated.version;
+      files.push(file.path);
+      this.push(file);
+      next();
+    }))
+    .pipe(fs.dest('./'))
+    .pipe(through.obj(function (file, enc, next) {
+      this.push(file);
+      next();
+    }, function () {
+      var ret = {
+        newVersion: updated.version
+        , versions: versionList
+        , message: files.map(function (file) {
+          return 'Updated ' + path.basename(file);
+        }).join('\n')
+      };
 
       if (!commitMessage) {
         callback(null, ret);
         return void 0;
       }
 
-      makeCommit(files, commitMessage, validVer, function (err) {
+      makeCommit(files, commitMessage, updated.version, function (err) {
         if (err) {
           callback(err, ret);
           return void 0;
         }
 
-        ret.message += "\nCommited to git and created tag v" + validVer;
+        ret.message += '\nCommited to git and created tag v' + updated.version;
         callback(null, ret);
       });
-    });
+    }))
   });
 };

@@ -1,54 +1,69 @@
-
 var version = require('../version')
   , assert = require("assert")
+  , fs = require('fs')
+  , vinylFs = require('vinyl-fs')
+  , path = require('path')
+  , File = require('vinyl')
+  , through = require('through2')
   ;
 
 describe('mversion(nofile)', function () {
+  var packages = "package.json";
+  var component = "component.json";
+  var expectedPackagesPath = path.join(__dirname, './fixtures/', packages);
+  var expectedComponentPath = path.join(__dirname, './fixtures/', component);
 
-  var tmpLoad = version._loadFiles
-    , tmpSave = version._saveFiles
-    ;
+  var expectedPackages = new File({
+    base: __dirname,
+    cwd: __dirname,
+    path: expectedPackagesPath,
+    contents: fs.readFileSync(expectedPackagesPath)
+  });
+
+  var expectedComponent = new File({
+    base: __dirname,
+    cwd: __dirname,
+    path: expectedComponentPath,
+    contents: fs.readFileSync(expectedComponentPath)
+  });
+
+  var original = version._loadFiles;
+  var dest = vinylFs.dest;
+
+  before(function () {
+    vinylFs.dest = function () {
+      return through.obj(function (file, enc, next) {
+        this.push(file);
+        next();
+      });
+    }
+  });
 
   after(function () {
-    // Reset version spies
-    version._loadFiles = tmpLoad;
-    version._saveFiles = tmpSave;
+    version._loadFiles = original;
+    vinylFs.dest = dest;
   });
 
   var setupLoadSpy = function (v1, v2) {
-    version._loadFiles = function (callback) {
-      var ret = [];
-
+    version._loadFiles = function (cb) {
+      var stream = through.obj();
       if (v1) {
-        ret.push({
-            file: 'package.json'
-          , data: {
-            version: v1
-          }
-        });
+        var c1 = JSON.parse(expectedPackages.contents.toString());
+        c1.version = v1;
+        expectedPackages.contents = new Buffer(JSON.stringify(c1));
+        stream.write(expectedPackages);
       }
-
       if (v2) {
-        ret.push({
-            file: 'component.json'
-          , data: {
-            version: v2
-          }
-        });
+        var c2 = JSON.parse(expectedPackages.contents.toString());
+        c2.version = v2;
+        expectedComponent.contents = new Buffer(JSON.stringify(c2));
+        stream.write(expectedComponent);
       }
-
-      callback(null, ret);
+      cb(null, stream);
+      stream.end();
+      return stream;
     };
   };
-
-  version._saveFiles = function (result, callback) {
-    var ret = [];
-    result.forEach(function (file) {
-      ret.push('Updated ' + file.file);
-    });
-    callback(null, ret);
-  };
-
 
   describe('#Get()', function(){
     it('should return correct version from both files', function (done) {
@@ -56,7 +71,6 @@ describe('mversion(nofile)', function () {
 
       version.get(function (err, data) {
         assert.ifError(err);
-
         assert.equal('0.0.0', data['package.json'])
         assert.equal('0.0.0', data['component.json'])
         done();
@@ -212,7 +226,6 @@ describe('mversion(nofile)', function () {
         done();
       });
     });
-
   });
 });
 

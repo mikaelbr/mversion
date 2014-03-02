@@ -2,6 +2,7 @@
 
 var argv = process.argv.slice(2)
   , version = require('../version')
+  , thisVersion = require('../package.json').version
   ;
 
 
@@ -32,6 +33,11 @@ if (argv[0] === '-h' || argv[0] === '--help' || argv[0] === '?') {
   return usage();
 }
 
+if (argv[0] === '-v' || argv[0] === '--version') {
+  console.log('mversion v' + thisVersion);
+  return;
+}
+
 // Check for git:
 if (argv.length > 1 && argv[1] === "-m") {
   if (argv[2]) {
@@ -40,7 +46,6 @@ if (argv.length > 1 && argv[1] === "-m") {
     commitMessage = defaultMessage;
   }
 }
-
 
 version.update(argv[0], commitMessage, function (err, data) {
   if (err && !data) {
