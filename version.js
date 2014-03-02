@@ -10,6 +10,7 @@ var semver = require('semver')
 exports._files = [
     'package.json'
   , 'npm-shrinkwrap.json'
+  , '*.jquery.json'
   , 'component.json'
   , 'bower.json'
   , 'manifest.json'
