@@ -142,7 +142,8 @@ exports.update = function (ver, commitMessage, callback) {
       ;
 
     stream.pipe(through.obj(function(file, e, next) {
-      var contents = JSON.parse(file.contents.toString());
+      var json = file.contents.toString();
+      var contents = JSON.parse(json);
 
       if (!hasSet) {
         hasSet = true;
@@ -155,7 +156,7 @@ exports.update = function (ver, commitMessage, callback) {
       }
 
       contents.version = updated.version;
-      file.contents = new Buffer(JSON.stringify(contents, null, 2));
+      file.contents = new Buffer(JSON.stringify(contents, null, space(json)));
       versionList[path.basename(file.path)] = updated.version;
       files.push(file.path);
       this.push(file);
@@ -191,3 +192,9 @@ exports.update = function (ver, commitMessage, callback) {
     }))
   });
 };
+
+// Figured out which "space" params to be used for JSON.stringfiy.
+function space(json) {
+    var match = json.match(/^(?:(\t+)|( +))"/m);
+    return match ? (match[1] ? '\t' : match[2].length) : ''
+}
