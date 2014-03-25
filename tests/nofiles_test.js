@@ -44,22 +44,33 @@ describe('mversion(nofile)', function () {
     vinylFs.dest = dest;
   });
 
-  var setupLoadSpy = function (v1, v2) {
+  var setupLoadSpy = function (v1, v2,
+     stringify /* custom stringify function */,
+     assertion /* optional assertion for file contents */
+   ) {
     version._loadFiles = function (cb) {
       var stream = through.obj();
       if (v1) {
         var c1 = JSON.parse(expectedPackages.contents.toString());
         c1.version = v1;
-        expectedPackages.contents = new Buffer(JSON.stringify(c1));
+        expectedPackages.contents = new Buffer(typeof stringify === 'function' ? stringify(c1) : JSON.stringify(c1));
         stream.write(expectedPackages);
       }
       if (v2) {
         var c2 = JSON.parse(expectedPackages.contents.toString());
         c2.version = v2;
-        expectedComponent.contents = new Buffer(JSON.stringify(c2));
+        expectedComponent.contents = new Buffer(typeof stringify === 'function' ? stringify(c2) : JSON.stringify(c2));
         stream.write(expectedComponent);
       }
       cb(null, stream);
+
+      if (assertion) {
+        stream.pipe(through.obj(function (file, enc, next) {
+          assertion(file, enc);
+          next();
+        }));
+      }
+
       stream.end();
       return stream;
     };
@@ -204,6 +215,30 @@ describe('mversion(nofile)', function () {
         assert.equal(res.versions['package.json'], '1.0.0-beta')
         assert.equal(res.versions['component.json'], '1.0.0-beta')
         assert.equal(res.message, "Updated package.json\nUpdated component.json");
+
+        done();
+      });
+    });
+
+    it('should be able to accommodate different whitespaces/tabs usages', function (done) {
+
+      var expected = [], actual = [];
+      var no_version_change = '1.0.0';
+      setupLoadSpy(no_version_change, no_version_change, function useTab(obj) {
+        var str = JSON.stringify(obj, null, '\t');
+        expected.push(str);
+        return str;
+      }, function assertOutput(file) {
+        actual.push(file.contents.toString());
+      });
+
+      version.update(no_version_change, function (err, res) {
+        assert.ifError(err);
+
+        assert.equal(res.versions['package.json'], no_version_change);
+        assert.equal(res.versions['component.json'], no_version_change);
+        assert.equal(res.message, "Updated package.json\nUpdated component.json");
+        assert.deepEqual(expected, actual, "Updated file contents doesn't match.");
 
         done();
       });
