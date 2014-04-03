@@ -156,7 +156,7 @@ exports.update = function (ver, commitMessage, callback) {
       }
 
       contents.version = updated.version;
-      file.contents = new Buffer(JSON.stringify(contents, null, space(json)));
+      file.contents = new Buffer(JSON.stringify(contents, null, space(json)) + hasNewLine(json));
       versionList[path.basename(file.path)] = updated.version;
       files.push(file.path);
       this.push(file);
@@ -192,6 +192,12 @@ exports.update = function (ver, commitMessage, callback) {
     }))
   });
 };
+
+// Preserver new line at the end of a file
+function hasNewLine(json) {
+  var lastChar = (json.slice(-1) === '\n') ? '\n' : '';
+  return lastChar;
+}
 
 // Figured out which "space" params to be used for JSON.stringfiy.
 function space(json) {
