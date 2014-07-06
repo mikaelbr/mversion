@@ -19,14 +19,15 @@
     "mversion": "./bin/version"
   },
   "dependencies": {
-    "async": "~0.2.10",
-    "vinyl-fs": "~0.1.0",
-    "through2": "~0.4.1",
-    "minimatch": "~0.2.14",
-    "semver": "~2.2.1"
+    "async": "^0.9.0",
+    "vinyl-fs": "^0.3.4",
+    "through2": "^1.0.0",
+    "minimatch": "^0.3.0",
+    "semver": "^2.3.1",
+    "mocha": "^1.20.1"
   },
   "devDependencies": {
-    "mocha": "~1.9.0",
-    "vinyl": "~0.2.3"
+    "mocha": "*",
+    "vinyl": "*"
   }
 }
