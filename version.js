@@ -1,95 +1,26 @@
 var semver = require('semver')
-  , async = require('async')
   , path = require('path')
   , through = require('through2')
-  , minimatch = require('minimatch')
   , fs = require('vinyl-fs')
-  , exec = require('child_process').exec
+  , fUtil = require('./lib/files')
+  , git = require('./lib/git')
   ;
-
-exports._files = [
-    'package.json'
-  , 'npm-shrinkwrap.json'
-  , '*.jquery.json'
-  , 'component.json'
-  , 'bower.json'
-  , 'manifest.json'
-];
-
-var gitApp = 'git'
-  , gitExtra = { env: process.env }
-  ;
-
-exports._loadFiles = function (cb) {
-  var files = fs.src(exports._files);
-  cb(null, files);
-  return files;
-};
-
-var isPackageFile = exports.isPackageFile = function (file) {
-  for (var i = 0; i < exports._files.length; i++) {
-    if (minimatch(file, exports._files[i])) {
-      return true;
-    }
-  }
-  return false;
-};
-
-var doOnCleanRepository = function (callback) {
-  exec(gitApp + ' ' + [ 'status', '--porcelain' ].join(' '), gitExtra, function (er, stdout, stderr) {
-    // makeCommit parly inspired and taken from NPM version module
-    var lines = stdout.trim().split('\n').filter(function (line) {
-      var file = path.basename(line.replace(/.{1,2}\s+/, ''));
-      return line.trim() && !line.match(/^\?\? /) && !isPackageFile(line);
-    }).map(function (line) {
-      return line.trim()
-    });
-
-    if (lines.length) {
-      return callback(new Error('Git working directory not clean.\n'+lines.join('\n')));
-    }
-    return callback();
-  });
-};
-
-var makeCommit = function (files, message, newVer, callback) {
-  message = message.replace('%s', newVer).replace('"', '').replace("'", '');
-
-  async.series(
-    [
-      function (done) {
-        exec(gitApp + ' add ' + files.join(' '), gitExtra, done);
-      }
-
-      , function (done) {
-        exec(gitApp + ' ' + ['commit', '-m', '"' + message + '"'].join(' '), gitExtra, done);
-      }
-
-      , function (done) {
-        exec(gitApp + " " + ['tag', '-a', 'v' + newVer, '-m', '"' + message + '"'].join(' '), gitExtra, done);
-      }
-    ]
-    , callback
-  );
-};
 
 exports.get = function (callback) {
-  exports._loadFiles(function(err, result) {
-    var ret = {};
-    if (err) {
-      callback(err);
-      return void 0;
-    }
-    result.pipe(through.obj(function (file, e, next) {
+  var result = fUtil.loadFiles();
+  var ret = {};
+
+  result
+    .on('data', function (file) {
       var contents = JSON.parse(file.contents.toString());
       ret[path.basename(file.path)] = contents.version;
-      this.push(file);
-      next();
-    }, function () {
+    })
+    .on('end', function () {
       callback(null, ret);
-    }));
-  });
+    });
 };
+
+exports.isPackageFile = fUtil.isPackageFile;
 
 var updateJSON = exports.updateJSON = function (obj, ver) {
   ver = ver.toLowerCase();
@@ -110,38 +41,43 @@ var updateJSON = exports.updateJSON = function (obj, ver) {
   return obj;
 };
 
-exports.update = function (ver, commitMessage, callback) {
-  var files = [];
+exports.update = function (ver, commitMessage, noPrefix, callback) {
 
-  if (!callback && commitMessage && typeof commitMessage  === 'function') {
+  if (!callback && typeof noPrefix  === 'function') {
+    callback = noPrefix;
+    noPrefix = false;
+  }
+  noPrefix = !!noPrefix;
+
+  if (!callback && typeof commitMessage  === 'function') {
     callback = commitMessage;
     commitMessage = null;
   }
-  if (!callback) {
-    callback = function () { };
-  }
+  callback = callback || noop();
 
-  async.series([
-      function (done) {
-        if (commitMessage) {
-          return doOnCleanRepository(done);
-        }
-        return done();
-      }
-    , exports._loadFiles
-  ], function(err, results) {
+  (function (done) {
+    if (commitMessage) {
+      return git.isRepositoryClean(done);
+    }
+    return done(null);
+  })(function(err) {
     if (err) {
       callback(err);
       return void 0;
     }
 
-    var stream = results[1]
+    var files = []
+      , stream = fUtil.loadFiles()
       , versionList = {}
       , updated = null
       , hasSet = false
       ;
-
-    stream.pipe(through.obj(function(file, e, next) {
+    var i = 0;
+    var stored = stream.pipe(through.obj(function(file, e, next) {
+      if (file == null || file.isNull()) {
+        this.push(null);
+        next();
+      }
       var json = file.contents.toString();
       var contents = JSON.parse(json);
 
@@ -156,17 +92,19 @@ exports.update = function (ver, commitMessage, callback) {
       }
 
       contents.version = updated.version;
-      file.contents = new Buffer(JSON.stringify(contents, null, space(json)) + hasNewLine(json));
+      file.contents = new Buffer(JSON.stringify(contents, null, fUtil.space(json)) + fUtil.getLastChar(json));
       versionList[path.basename(file.path)] = updated.version;
-      files.push(file.path);
+
       this.push(file);
       next();
     }))
-    .pipe(fs.dest('./'))
-    .pipe(through.obj(function (file, enc, next) {
-      this.push(file);
-      next();
-    }, function () {
+    .pipe(fs.dest('./'));
+
+    stored.on('data', function (file) {
+      files.push(file.path);
+    });
+
+    stored.on('end', function () {
       var ret = {
         newVersion: updated.version
         , versions: versionList
@@ -180,27 +118,21 @@ exports.update = function (ver, commitMessage, callback) {
         return void 0;
       }
 
-      makeCommit(files, commitMessage, updated.version, function (err) {
+      git.commit(files, commitMessage, updated.version, noPrefix, function (err) {
         if (err) {
           callback(err, ret);
           return void 0;
         }
 
-        ret.message += '\nCommited to git and created tag v' + updated.version;
+        ret.message += '\nCommited to git and created tag ';
+        if (!noPrefix) ret.message += 'v';
+        ret.message += updated.version;
         callback(null, ret);
       });
-    }))
+    });
   });
 };
 
-// Preserver new line at the end of a file
-function hasNewLine(json) {
-  var lastChar = (json.slice(-1) === '\n') ? '\n' : '';
-  return lastChar;
-}
-
-// Figured out which "space" params to be used for JSON.stringfiy.
-function space(json) {
-    var match = json.match(/^(?:(\t+)|( +))"/m);
-    return match ? (match[1] ? '\t' : match[2].length) : ''
+function noop () {
+  return function () { };
 }

@@ -46,6 +46,11 @@ Ex: "mversion 1.0.1-beta"
 Use -m to auto commit and tag. Apply optional message and
 use '%s' as placeholder for the updated version. Default
 message is 'v%s' where %s is replaced with new version.
+
+--no-prefix (or -n for short) is used when you want to make
+a tag without v as prefix. This does not change behaviour of
+the message, just the tag name.
+
 --
 Ex: "mversion minor -m"
 Ex: "mversion minor -m 'Bumped to v%s'"
@@ -100,6 +105,7 @@ mversion.get(function (err, data) {
 mversion.update('minor', function (err, data) { })
 mversion.update('major', function (err, data) { })
 mversion.update('major', 'Some commit message for version %s', function (err, data) { }) // Will commit/tag
+mversion.update('major', 'Message for %s', true, function (err, data) { }) // Will tag without v prefix
 mversion.update('patch', function (err, data) { })
 mversion.update('build', function (err, data) { })
 mversion.update('0.0.1', 'Bumping version', function (err, data) { }) // Will commit/tag
@@ -107,6 +113,27 @@ mversion.update('v1.0.1', function (err, data) { })
 mversion.update('v1.0.1-beta', function (err, data) { })
 mversion.update('v1.0.1-010988', function (err, data) { })
 ```
+
+
+### `mversion.get(callback(err, data))`
+Get version of all the different package files. See example above.
+
+### `mversion.update(version, [commitMessage, noPrefix, ]callback(err, data))`
+Update version of found package files. See examples above.
+
+### `mversion.isPackageFile(filename) : Boolean`
+Checks whether or not the given filename is a valid package file type.
+
+Examples:
+```javascript
+assert.equal(mversion.isPackageFile('package.json'), true);
+assert.equal(mversion.isPackageFile('component.json'), true);
+assert.equal(mversion.isPackageFile('bower.json'), true);
+assert.equal(mversion.isPackageFile('foobar.json'), false);
+assert.equal(mversion.isPackageFile('foobar.jquery.json'), true);
+assert.equal(mversion.isPackageFile('foojquery.json'), false);
+```
+
 
 [npm-url]: https://npmjs.org/package/mversion
 [npm-image]: https://badge.fury.io/js/mversion.png

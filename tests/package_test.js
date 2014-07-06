@@ -5,6 +5,7 @@ var version = require('../version')
   , path = require('path')
   , File = require('vinyl')
   , through = require('through2')
+  , fUtil = require('../lib/files')
   ;
 
 describe('mversion(package.json)', function () {
@@ -12,7 +13,7 @@ describe('mversion(package.json)', function () {
   var expectedPath = path.join(__dirname, './fixtures/', filename);
   var expectedContent = fs.readFileSync(expectedPath);
 
-  var original = version._loadFiles;
+  var original = fUtil.loadFiles;
   var dest = vinylFs.dest;
 
   before(function () {
@@ -32,17 +33,16 @@ describe('mversion(package.json)', function () {
       contents: expectedContent
     });
 
-    version._loadFiles = function (cb) {
+    fUtil.loadFiles = function () {
       var stream = through.obj();
       stream.write(expectedFile);
       stream.end();
-      cb(null, stream);
       return stream;
     };
   });
 
   after(function () {
-    version._loadFiles = original;
+    fUtil.loadFiles = original;
     vinylFs.dest = dest;
   });
 

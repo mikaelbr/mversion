@@ -40,14 +40,14 @@ if (argv[0] === '-v' || argv[0] === '--version') {
 
 // Check for git:
 if (argv.length > 1 && argv[1] === "-m") {
-  if (argv[2]) {
+  if (argv[2] && argv[2] != "-n" && argv[2] != "--no-prefix") {
     commitMessage = argv[2];
   } else {
     commitMessage = defaultMessage;
   }
 }
 
-version.update(argv[0], commitMessage, function (err, data) {
+version.update(argv[0], commitMessage, isNoPrefix(), function (err, data) {
   if (err && !data) {
     console.error("Failed:", err.message);
     return;
@@ -62,7 +62,7 @@ version.update(argv[0], commitMessage, function (err, data) {
 });
 
 function usage () {
-  console.log(["Usage: mversion [ <newversion> | major | minor | patch | build ] [ -m <optional message> ] "
+  console.log(["Usage: mversion [ <newversion> | major | minor | patch | build ] [ -m <optional message> ] [ -n|--no-prefix ]"
               ,"(run in package dir)."
               ,""
               ,"Update module version in either or all of package.json,"
@@ -82,10 +82,24 @@ function usage () {
               ,"Use -m to auto commit and tag. Apply optional message and "
               ,"use '%s' as placeholder for the updated version. Default "
               ,"message is 'v%s' where %s is replaced with new version."
+              ,""
+              ,"--no-prefix (or -n for short) is used when you want to make"
+              ,"a tag without v as prefix. This does not change behaviour of"
+              ,"the message, just the tag name."
+              ,""
               ,"--"
               ,"Ex: \"mversion minor -m\""
               ,"Ex: \"mversion minor -m 'Bumped to v%s'\""
               ,"--"
               ,""
               ].join("\n"))
+}
+
+function isNoPrefix() {
+  for(var i = 0, len = argv.length; i < len; i++) {
+    if (argv[i] === '-n' || argv[i] === '--no-prefix') {
+      return true;
+    }
+  }
+  return false;
 }

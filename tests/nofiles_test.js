@@ -4,6 +4,7 @@ var version = require('../version')
   , vinylFs = require('vinyl-fs')
   , path = require('path')
   , File = require('vinyl')
+  , fUtil = require('../lib/files')
   , through = require('through2')
   ;
 
@@ -27,7 +28,7 @@ describe('mversion(nofile)', function () {
     contents: fs.readFileSync(expectedComponentPath)
   });
 
-  var original = version._loadFiles;
+  var original = fUtil.loadFiles;
   var dest = vinylFs.dest;
 
   before(function () {
@@ -40,7 +41,7 @@ describe('mversion(nofile)', function () {
   });
 
   after(function () {
-    version._loadFiles = original;
+    fUtil.loadFiles = original;
     vinylFs.dest = dest;
   });
 
@@ -48,25 +49,28 @@ describe('mversion(nofile)', function () {
      stringify /* custom stringify function */,
      assertion /* optional assertion for file contents */
    ) {
-    version._loadFiles = function (cb) {
+    fUtil.loadFiles = function () {
       var stream = through.obj();
+      var fn = typeof stringify === 'function' ? stringify : JSON.stringify;
+
       if (v1) {
         var c1 = JSON.parse(expectedPackages.contents.toString());
         c1.version = v1;
-        expectedPackages.contents = new Buffer(typeof stringify === 'function' ? stringify(c1) : JSON.stringify(c1));
+        expectedPackages.contents = new Buffer(fn(c1));
         stream.write(expectedPackages);
       }
+
       if (v2) {
         var c2 = JSON.parse(expectedPackages.contents.toString());
         c2.version = v2;
-        expectedComponent.contents = new Buffer(typeof stringify === 'function' ? stringify(c2) : JSON.stringify(c2));
+        expectedComponent.contents = new Buffer(fn(c2));
         stream.write(expectedComponent);
       }
-      cb(null, stream);
 
       if (assertion) {
-        stream.pipe(through.obj(function (file, enc, next) {
-          assertion(file, enc);
+        stream.pipe(through.obj(function (file, e, next) {
+          assertion(file);
+          this.push(file);
           next();
         }));
       }
