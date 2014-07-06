@@ -26,13 +26,20 @@ npm install -g mversion
 ```
 $ mversion -h
 
-Usage: mversion [ <newversion> | major | minor | patch | build ] [ -m <optional message> ]
-(run in package dir).
+Usage: mversion [ <newversion> | major | minor | patch | prerelease ] [ -m <optional message> ] [ -n | --no-prefix ]
+(run in package dir) - (Also supports premajor, preminor and prepatch, see semver summary)
 
-Update module version in either or all of package.json,
-component.json, bower.json, manifest.json.
+Update module version in either one or all of package.json,
+component.json, bower.json, manifest.json and *.jquery.json.
 
 Run without arguments to get current version.
+
+# Semver Summary
+Given a version number MAJOR.MINOR.PATCH, increment the:
+- MAJOR version when you make incompatible API changes,,
+- MINOR version when you add functionality in a backwards-compatible manner, and,
+- PATCH version when you make backwards-compatible bug fixes.,
+Additional labels for pre-release and build metadata are available as extensions to the MAJOR.MINOR.PATCH format.,
 
 # Update version
 Update version by defining new semver valid version
