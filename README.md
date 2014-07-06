@@ -133,13 +133,15 @@ assert.equal(mversion.isPackageFile('foobar.json'), false);
 assert.equal(mversion.isPackageFile('foobar.jquery.json'), true);
 assert.equal(mversion.isPackageFile('foojquery.json'), false);
 ```
+## License
 
+[MIT License](http://en.wikipedia.org/wiki/MIT_License)
 
-[npm-url]: https://npmjs.org/package/mversion
-[npm-image]: https://badge.fury.io/js/mversion.png
+[npm-url]: https://npmjs.org/package/gulp-notify
+[npm-image]: http://img.shields.io/npm/v/gulp-notify.svg?style=flat
 
-[travis-url]: http://travis-ci.org/mikaelbr/mversion
-[travis-image]: https://secure.travis-ci.org/mikaelbr/mversion.png?branch=master
+[travis-url]: http://travis-ci.org/mikaelbr/gulp-notify
+[travis-image]: http://img.shields.io/travis/mikaelbr/gulp-notify.svg?style=flat
 
-[depstat-url]: https://david-dm.org/mikaelbr/mversion
-[depstat-image]: https://david-dm.org/mikaelbr/mversion.png
+[depstat-url]: https://gemnasium.com/mikaelbr/gulp-notify
+[depstat-image]: http://img.shields.io/gemnasium/mikaelbr/gulp-notify.svg?style=flat
