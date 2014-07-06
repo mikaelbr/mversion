@@ -111,11 +111,21 @@ mversion.get(function (err, data) {
 
 mversion.update('minor', function (err, data) { })
 mversion.update('major', function (err, data) { })
-mversion.update('major', 'Some commit message for version %s', function (err, data) { }) // Will commit/tag
-mversion.update('major', 'Message for %s', true, function (err, data) { }) // Will tag without v prefix
+mversion.update({
+    version: 'major',
+    commitMessage: 'Some commit message for version %s'
+  }, function (err, data) { }) // Will commit/tag
+mversion.update({
+    version: 'major',
+    commitMessage: 'Some commit message for version %s',
+    noPrefix: true
+  }, function (err, data) { }) // Make tag without v prefix
 mversion.update('patch', function (err, data) { })
 mversion.update('build', function (err, data) { })
-mversion.update('0.0.1', 'Bumping version', function (err, data) { }) // Will commit/tag
+mversion.update({
+    version: '0.0.1',
+    commitMessage: 'Bumping version'
+  }, function (err, data) { }) // Will commit/tag
 mversion.update('v1.0.1', function (err, data) { })
 mversion.update('v1.0.1-beta', function (err, data) { })
 mversion.update('v1.0.1-010988', function (err, data) { })
@@ -125,8 +135,51 @@ mversion.update('v1.0.1-010988', function (err, data) { })
 ### `mversion.get(callback(err, data))`
 Get version of all the different package files. See example above.
 
-### `mversion.update(version, [commitMessage, noPrefix, ]callback(err, data))`
-Update version of found package files. See examples above.
+### `mversion.update([options, ]callback(err, data))`
+Update version of found package files.
+
+#### `options : Undefined`
+If options is undefined a standard bump of `minor` will be used.
+
+#### `options : String`
+If options is a string, this string is used as the version bump.
+
+Example:
+```javascript
+mversion.update('major')
+```
+
+#### `options.version : String`
+Used to bump version. See above.
+
+#### `options.commitMessage : String`
+Used as message when creating commit in Git. Also used as message for
+the annotated tag created. If undefined, no commit will be made.
+
+Occurances of `%s` in commit message will be replaced with new version number.
+
+Example:
+```javascript
+mversion.update({
+  version: 'major',
+  commitMessage: 'Bumps to version %s'
+})
+```
+
+
+#### `options.noPrefix : Boolean`
+If true and commitMessage is defined, the annotated tag created
+will not have 'v' as prefix.
+
+Example:
+```javascript
+mversion.update({
+  version: 'major',
+  commitMessage: 'Bumps to version %s',
+  noPrefix: true
+})
+```
+
 
 ### `mversion.isPackageFile(filename) : Boolean`
 Checks whether or not the given filename is a valid package file type.

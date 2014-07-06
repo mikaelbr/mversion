@@ -62,7 +62,10 @@ describe('git', function () {
         return cb(new Error('Not clean'));
       };
 
-      version.update('1.0.0', 'Message', function (err, data) {
+      version.update({
+        version: '1.0.0',
+        commitMessage: 'Message'
+      }, function (err, data) {
         assert.ok(err);
         assert.equal(err.message, 'Not clean', 'Error message should be set by isRepositoryClean');
 
@@ -94,7 +97,10 @@ describe('git', function () {
         return callback(null);
       };
 
-      version.update('1.0.0', 'Message', function (err, data) {
+      version.update({
+        version: '1.0.0',
+        commitMessage: 'Message'
+      }, function (err, data) {
         assert.ifError(err);
         done();
       });
@@ -110,7 +116,11 @@ describe('git', function () {
         return callback(null);
       };
 
-      version.update('1.0.0', 'Message', true, function (err, data) {
+      version.update({
+        version: '1.0.0',
+        commitMessage: 'Message',
+        noPrefix: true
+      }, function (err, data) {
         assert.ifError(err);
         done();
       });
@@ -127,7 +137,10 @@ describe('git', function () {
         done();
       };
 
-      version.update('1.0.0', 'Message');
+      version.update({
+        version: '1.0.0',
+        commitMessage: 'Message'
+      });
     });
 
     it('should make tag without v-prefix if specified', function (done) {
@@ -141,7 +154,11 @@ describe('git', function () {
         done();
       };
 
-      version.update('1.0.0', 'Message', true);
+      version.update({
+        version: '1.0.0',
+        commitMessage: 'Message',
+        noPrefix: true
+      });
     });
   });
 

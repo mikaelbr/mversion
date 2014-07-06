@@ -48,7 +48,11 @@ if (argv.length > 1 && argv[1] === "-m") {
   }
 }
 
-version.update(argv[0], commitMessage, isNoPrefix(), function (err, data) {
+version.update({
+  version: argv[0],
+  commitMessage: commitMessage,
+  noPrefix: isNoPrefix()
+}, function (err, data) {
   if (err && !data) {
     console.error("Failed:", err.message);
     return;

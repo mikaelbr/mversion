@@ -182,6 +182,20 @@ describe('mversion(nofile)', function () {
       });
     });
 
+    it('should default bump to a minor', function (done) {
+      setupLoadSpy('0.0.0', '0.0.0');
+
+      version.update(function (err, res) {
+        assert.ifError(err);
+
+        assert.equal('0.1.0', res.versions['package.json'])
+        assert.equal('0.1.0', res.versions['component.json'])
+        assert.equal(res.message, "Updated package.json\nUpdated component.json");
+
+        done();
+      });
+    });
+
     it('should be able to update both files by setting release with capital letters', function (done) {
       setupLoadSpy('0.0.0', '0.0.0');
 

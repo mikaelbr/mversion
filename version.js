@@ -41,18 +41,25 @@ var updateJSON = exports.updateJSON = function (obj, ver) {
   return obj;
 };
 
-exports.update = function (ver, commitMessage, noPrefix, callback) {
-
-  if (!callback && typeof noPrefix  === 'function') {
-    callback = noPrefix;
-    noPrefix = false;
+exports.update = function (options, callback) {
+  if (typeof options === "function") {
+    callback = options;
+    options = {};
   }
-  noPrefix = !!noPrefix;
 
-  if (!callback && typeof commitMessage  === 'function') {
-    callback = commitMessage;
-    commitMessage = null;
+  options = options || {};
+
+  if (typeof options === "string") {
+    options = {
+      version: options,
+      noPrefix: false,
+      commitMessage: void 0
+    };
   }
+
+  var ver = options.version || 'minor';
+  var noPrefix = !!options.noPrefix;
+  var commitMessage = options.commitMessage || void 0;
   callback = callback || noop();
 
   (function (done) {
