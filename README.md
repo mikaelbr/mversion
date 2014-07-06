@@ -193,6 +193,17 @@ assert.equal(mversion.isPackageFile('foobar.json'), false);
 assert.equal(mversion.isPackageFile('foobar.jquery.json'), true);
 assert.equal(mversion.isPackageFile('foojquery.json'), false);
 ```
+
+## Changelog
+
+### 1.0.0
+1. Changes API to use an object literal, avoiding magic strings/primitives.
+
+
+### 0.5.0
+1. Adds `noPrefix` flag. Allowing to define whether or not to prefix tags with "v".
+
+
 ## License
 
 [MIT License](http://en.wikipedia.org/wiki/MIT_License)
