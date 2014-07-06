@@ -10,7 +10,7 @@ exports.get = function (callback) {
   var result = fUtil.loadFiles();
   var ret = {};
 
-  result
+  return result
     .on('data', function (file) {
       var contents = JSON.parse(file.contents.toString());
       ret[path.basename(file.path)] = contents.version;
@@ -138,6 +138,7 @@ exports.update = function (options, callback) {
       });
     });
   });
+  return this;
 };
 
 function noop () {
