@@ -137,11 +137,11 @@ assert.equal(mversion.isPackageFile('foojquery.json'), false);
 
 [MIT License](http://en.wikipedia.org/wiki/MIT_License)
 
-[npm-url]: https://npmjs.org/package/gulp-notify
-[npm-image]: http://img.shields.io/npm/v/gulp-notify.svg?style=flat
+[npm-url]: https://npmjs.org/package/mversion
+[npm-image]: http://img.shields.io/npm/v/mversion.svg?style=flat
 
-[travis-url]: http://travis-ci.org/mikaelbr/gulp-notify
-[travis-image]: http://img.shields.io/travis/mikaelbr/gulp-notify.svg?style=flat
+[travis-url]: http://travis-ci.org/mikaelbr/mversion
+[travis-image]: http://img.shields.io/travis/mikaelbr/mversion.svg?style=flat
 
-[depstat-url]: https://gemnasium.com/mikaelbr/gulp-notify
-[depstat-image]: http://img.shields.io/gemnasium/mikaelbr/gulp-notify.svg?style=flat
+[depstat-url]: https://gemnasium.com/mikaelbr/mversion
+[depstat-image]: http://img.shields.io/gemnasium/mikaelbr/mversion.svg?style=flat
