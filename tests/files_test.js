@@ -1,8 +1,7 @@
-var files = require('../lib/files')
-  , assert = require("assert")
-  , fs = require('fs')
-  , path = require('path')
-  ;
+var files = require('../lib/files'),
+    assert = require('assert'),
+    fs = require('fs'),
+    path = require('path');
 
 describe('files', function () {
   describe('#isPackageFile()', function(){
@@ -28,9 +27,9 @@ describe('files', function () {
   });
 
   describe('#space()', function(){
-    var fixture = { "foo": "bar" };
+    var fixture = { 'foo': 'bar' };
     it('should get tabs if tabs is used in json document', function (done) {
-      var obj = JSON.stringify(fixture, null, "\t");
+      var obj = JSON.stringify(fixture, null, '\t');
       assert.equal(files.space(obj), '\t');
       done();
     });

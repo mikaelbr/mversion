@@ -1,16 +1,15 @@
-var version = require('../version')
-  , assert = require("assert")
-  , fs = require('fs')
-  , vinylFs = require('vinyl-fs')
-  , path = require('path')
-  , File = require('vinyl')
-  , fUtil = require('../lib/files')
-  , through = require('through2')
-  ;
+var version = require('../version'),
+    assert = require('assert'),
+    fs = require('fs'),
+    vinylFs = require('vinyl-fs'),
+    path = require('path'),
+    File = require('vinyl'),
+    fUtil = require('../lib/files'),
+    through = require('through2');
 
 describe('mversion(nofile)', function () {
-  var packages = "package.json";
-  var component = "component.json";
+  var packages = 'package.json';
+  var component = 'component.json';
   var expectedPackagesPath = path.join(__dirname, './fixtures/', packages);
   var expectedComponentPath = path.join(__dirname, './fixtures/', component);
 
@@ -138,7 +137,7 @@ describe('mversion(nofile)', function () {
 
         assert.equal('1.0.0', res.versions['package.json']);
         assert.equal('1.0.0', res.versions['component.json']);
-        assert.equal(res.message, "Updated package.json\nUpdated component.json");
+        assert.equal(res.message, 'Updated package.json\nUpdated component.json');
 
         done();
       });
@@ -151,7 +150,7 @@ describe('mversion(nofile)', function () {
         assert.ifError(err);
 
         assert.equal('2.0.0', res.versions['package.json'])
-        assert.equal(res.message, "Updated package.json");
+        assert.equal(res.message, 'Updated package.json');
         done();
       });
     });
@@ -163,7 +162,7 @@ describe('mversion(nofile)', function () {
         assert.ifError(err);
 
         assert.equal('2.0.0', res.versions['component.json'])
-        assert.equal(res.message, "Updated component.json");
+        assert.equal(res.message, 'Updated component.json');
         done();
       });
     });
@@ -176,7 +175,7 @@ describe('mversion(nofile)', function () {
 
         assert.equal('0.1.0', res.versions['package.json'])
         assert.equal('0.1.0', res.versions['component.json'])
-        assert.equal(res.message, "Updated package.json\nUpdated component.json");
+        assert.equal(res.message, 'Updated package.json\nUpdated component.json');
 
         done();
       });
@@ -190,7 +189,7 @@ describe('mversion(nofile)', function () {
 
         assert.equal('0.1.0', res.versions['package.json'])
         assert.equal('0.1.0', res.versions['component.json'])
-        assert.equal(res.message, "Updated package.json\nUpdated component.json");
+        assert.equal(res.message, 'Updated package.json\nUpdated component.json');
 
         done();
       });
@@ -204,7 +203,7 @@ describe('mversion(nofile)', function () {
 
         assert.equal('1.0.0', res.versions['package.json'])
         assert.equal('1.0.0', res.versions['component.json'])
-        assert.equal(res.message, "Updated package.json\nUpdated component.json");
+        assert.equal(res.message, 'Updated package.json\nUpdated component.json');
 
         done();
       });
@@ -218,7 +217,7 @@ describe('mversion(nofile)', function () {
 
         assert.equal(res.versions['package.json'], '1.0.0-12345')
         assert.equal(res.versions['component.json'], '1.0.0-12345')
-        assert.equal(res.message, "Updated package.json\nUpdated component.json");
+        assert.equal(res.message, 'Updated package.json\nUpdated component.json');
 
         done();
       });
@@ -232,7 +231,7 @@ describe('mversion(nofile)', function () {
 
         assert.equal(res.versions['package.json'], '1.0.0-beta')
         assert.equal(res.versions['component.json'], '1.0.0-beta')
-        assert.equal(res.message, "Updated package.json\nUpdated component.json");
+        assert.equal(res.message, 'Updated package.json\nUpdated component.json');
 
         done();
       });
@@ -255,8 +254,8 @@ describe('mversion(nofile)', function () {
 
         assert.equal(res.versions['package.json'], no_version_change);
         assert.equal(res.versions['component.json'], no_version_change);
-        assert.equal(res.message, "Updated package.json\nUpdated component.json");
-        assert.deepEqual(expected, actual, "Updated file contents doesn't match.");
+        assert.equal(res.message, 'Updated package.json\nUpdated component.json');
+        assert.deepEqual(expected, actual, 'Updated file contents doesn\'t match.');
 
         done();
       });

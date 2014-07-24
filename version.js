@@ -1,10 +1,9 @@
-var semver = require('semver')
-  , path = require('path')
-  , through = require('through2')
-  , fs = require('vinyl-fs')
-  , fUtil = require('./lib/files')
-  , git = require('./lib/git')
-  ;
+var semver = require('semver'),
+    path = require('path'),
+    through = require('through2'),
+    fs = require('vinyl-fs'),
+    fUtil = require('./lib/files'),
+    git = require('./lib/git');
 
 exports.get = function (callback) {
   var result = fUtil.loadFiles();
@@ -81,12 +80,12 @@ exports.update = function (options, callback) {
       return void 0;
     }
 
-    var files = []
-      , stream = fUtil.loadFiles()
-      , versionList = {}
-      , updated = null
-      , hasSet = false
-      ;
+    var files = [],
+        stream = fUtil.loadFiles(),
+        versionList = {},
+        updated = null,
+        hasSet = false;
+
     var i = 0;
     var stored = stream.pipe(through.obj(function(file, e, next) {
       if (file == null || file.isNull()) {
@@ -121,9 +120,9 @@ exports.update = function (options, callback) {
 
     stored.on('end', function () {
       var ret = {
-        newVersion: updated.version
-        , versions: versionList
-        , message: files.map(function (file) {
+        newVersion: updated.version,
+        versions: versionList,
+        message: files.map(function (file) {
           return 'Updated ' + path.basename(file);
         }).join('\n')
       };

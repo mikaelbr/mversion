@@ -1,15 +1,14 @@
-var version = require('../version')
-  , assert = require("assert")
-  , fs = require('fs')
-  , vinylFs = require('vinyl-fs')
-  , path = require('path')
-  , File = require('vinyl')
-  , through = require('through2')
-  , fUtil = require('../lib/files')
-  ;
+var version = require('../version'),
+    assert = require('assert'),
+    fs = require('fs'),
+    vinylFs = require('vinyl-fs'),
+    path = require('path'),
+    File = require('vinyl'),
+    through = require('through2'),
+    fUtil = require('../lib/files');
 
 describe('mversion(package.json)', function () {
-  var filename = "package.json";
+  var filename = 'package.json';
   var expectedPath = path.join(__dirname, './fixtures/', filename);
   var expectedContent = fs.readFileSync(expectedPath);
 
