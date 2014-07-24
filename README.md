@@ -210,6 +210,10 @@ assert.equal(mversion.isPackageFile('foojquery.json'), false);
 
 ## Changelog
 
+### 1.1.0
+1. Improves CLI arguments. Now arguments is indifferent to order
+2. Adds better error handling and user feedback on partial version update (not all files).
+
 ### 1.0.0
 1. Changes API to use an object literal, avoiding magic strings/primitives.
 
