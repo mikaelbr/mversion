@@ -6,65 +6,71 @@ var argv = process.argv.slice(2)
   , thisVersion = require('../package.json').version
   ;
 
+var parsedArguments = require('minimist')(argv, {
+  'boolean': ['n']
+});
+var defaultMessage = "v%s";
 
-var commitMessage = null
-  , defaultMessage = "v%s"
-  ;
-
-// Check if get
 if (argv.length === 0) {
-  // is get
+  get();
+} else {
+  update();
+}
 
+function get() {
   version.get(function (err, data) {
     if (err) {
-      console.error("Failed:", err.message);
-      return;
+      console.error(chalk.red(err.message));
     }
 
     for(file in data) {
       if (data[file]) {
-        console.log('* ' + file + ': ' + data[file]);
+        console.log(chalk.green(file) + ': ' + chalk.yellow(data[file]));
       }
     }
+
+    if (err) process.exit(1);
   });
-  return;
 }
 
-if (argv[0] === '-h' || argv[0] === '--help' || argv[0] === '?') {
-  return usage();
-}
+function update () {
+  var updateOptions = {
+    version: parsedArguments._[0],
+    noPrefix: !!parsedArguments.n || parsedArguments.prefix === false
+  };
 
-if (argv[0] === '-v' || argv[0] === '--version') {
-  console.log('mversion v' + thisVersion);
-  return;
-}
-
-// Check for git:
-if (argv.length > 1 && argv[1] === "-m") {
-  if (argv[2] && argv[2] != "-n" && argv[2] != "--no-prefix") {
-    commitMessage = argv[2];
-  } else {
-    commitMessage = defaultMessage;
-  }
-}
-
-version.update({
-  version: argv[0],
-  commitMessage: commitMessage,
-  noPrefix: isNoPrefix()
-}, function (err, data) {
-  if (err && !data) {
-    console.error("Failed:", err.message);
-    return;
+  if (isArgumentPassed('h', 'help', '?')) {
+    usage();
+    process.exit(0);
   }
 
-  console.log('New Version:', data.newVersion);
-  console.log(data.message);
-
-  if (err) {
-    console.log("Error:", err.message);
+  if (isArgumentPassed('v', 'version')) {
+    console.log('mversion v' + thisVersion);
+    process.exit(0);
   }
-});
+
+  // Check for git:
+  if (isArgumentPassed('m')) {
+    updateOptions.commitMessage =
+      parsedArguments.m === true
+        ? defaultMessage
+        : parsedArguments.m;
+  }
+  version.update(updateOptions, function (err, data) {
+    if (err && !data) {
+      console.error("Failed:", err.message);
+      process.exit(1);
+    }
+
+    console.log('New Version:', data.newVersion);
+    console.log(data.message);
+
+    if (err) {
+      console.log("Error:", err.message);
+      process.exit(1);
+    }
+  });
+}
 
 function usage () {
   console.log([
@@ -108,9 +114,10 @@ function usage () {
               ].join("\n"))
 }
 
-function isNoPrefix() {
-  for(var i = 0, len = argv.length; i < len; i++) {
-    if (argv[i] === '-n' || argv[i] === '--no-prefix') {
+function isArgumentPassed () {
+  var args = Array.prototype.slice.apply(arguments);
+  for(var i = 0, len = args.length; i < len; i++) {
+    if (!!parsedArguments[args[i]]) {
       return true;
     }
   }

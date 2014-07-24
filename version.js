@@ -9,14 +9,22 @@ var semver = require('semver')
 exports.get = function (callback) {
   var result = fUtil.loadFiles();
   var ret = {};
+  var errors = [];
 
   return result
     .on('data', function (file) {
-      var contents = JSON.parse(file.contents.toString());
-      ret[path.basename(file.path)] = contents.version;
+      try {
+        var contents = JSON.parse(file.contents.toString());
+        ret[path.basename(file.path)] = contents.version;
+      } catch (e) {
+        errors.push(file.relative + ": " + e.message);
+      }
     })
     .on('end', function () {
-      callback(null, ret);
+      if (errors.length) {
+        return callback(new Error(errors.join('\n')), ret);
+      }
+      return callback(null, ret);
     });
 };
 

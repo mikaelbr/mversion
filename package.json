@@ -24,7 +24,8 @@
     "through2": "^1.0.0",
     "minimatch": "^0.3.0",
     "semver": "^2.3.1",
-    "chalk": "^0.5.0"
+    "chalk": "^0.5.0",
+    "minimist": "^0.2.0"
   },
   "devDependencies": {
     "mocha": "^1.20.1",
