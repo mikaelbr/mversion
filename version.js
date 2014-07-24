@@ -81,28 +81,37 @@ exports.update = function (options, callback) {
     }
 
     var files = [],
-        stream = fUtil.loadFiles(),
+        errors = [],
+        fileStream = fUtil.loadFiles(),
         versionList = {},
         updated = null,
         hasSet = false;
 
-    var i = 0;
-    var stored = stream.pipe(through.obj(function(file, e, next) {
+    var stored = fileStream.pipe(through.obj(function(file, e, next) {
       if (file == null || file.isNull()) {
         this.push(null);
         next();
+        return;
       }
-      var json = file.contents.toString();
-      var contents = JSON.parse(json);
+      var json = file.contents.toString(),
+          contents = null;
+
+      try {
+        contents = JSON.parse(json);
+      } catch (e) {
+        errors.push(new Error(file.relative + ': ' + e.message));
+        next();
+        return;
+      }
 
       if (!hasSet) {
         hasSet = true;
         updated = updateJSON(contents, ver);
-      }
 
-      if (!updated) {
-        callback(new Error('No valid version given.'));
-        return void 0;
+        if (!updated) {
+          this.emit('error', new Error('No valid version given.'))
+          return void 0;
+        }
       }
 
       contents.version = updated.version;
@@ -112,6 +121,9 @@ exports.update = function (options, callback) {
       this.push(file);
       next();
     }))
+    .on('error', function (err) {
+      callback(err);
+    })
     .pipe(fs.dest('./'));
 
     stored.on('data', function (file) {
@@ -119,22 +131,32 @@ exports.update = function (options, callback) {
     });
 
     stored.on('end', function () {
+      var errorMessage = null;
+      if (errors.length) {
+        errorMessage = errors.map(function (e) {
+          return " * " + e.message;
+        }).join('\n');
+      }
+
+      updated = updated || { version: 'N/A' };
+
       var ret = {
         newVersion: updated.version,
         versions: versionList,
         message: files.map(function (file) {
           return 'Updated ' + path.basename(file);
-        }).join('\n')
+        }).join('\n'),
+        updatedFiles: files
       };
 
-      if (!commitMessage) {
-        callback(null, ret);
+      if (!commitMessage || errorMessage) {
+        callback(errorMessage ? new Error(errorMessage) : null, ret);
         return void 0;
       }
 
       git.commit(files, commitMessage, updated.version, noPrefix, function (err) {
         if (err) {
-          callback(err, ret);
+          callback(err, null);
           return void 0;
         }
 
@@ -147,6 +169,8 @@ exports.update = function (options, callback) {
   });
   return this;
 };
+
+
 
 function noop () {
   return function () { };

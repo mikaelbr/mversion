@@ -138,6 +138,20 @@ Get version of all the different package files. See example above.
 ### `mversion.update([options, ]callback(err, data))`
 Update version of found package files.
 
+Example of the `data` returned from the callback:
+
+```json
+{
+  "newVersion": "1.0.0",
+  "versions": { "package.json": "1.0."},
+  "message": "Updated package.json",
+  "updatedFiles": ["/mversion/example/package.json"]
+}
+```
+
+Some times both `data` and `err` has values. In this case
+some package files were updated and some not.
+
 #### `options : Undefined`
 If options is undefined a standard bump of `minor` will be used.
 

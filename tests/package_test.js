@@ -54,6 +54,28 @@ describe('mversion(package.json)', function () {
         done();
       });
     });
+
+    it('should give error if syntax error in package.json', function (done) {
+      var expectedFile = new File({
+        base: __dirname,
+        cwd: __dirname,
+        path: expectedPath,
+        contents: new Buffer('{ "version": "1.1.1" "foo": "bar }')
+      });
+
+      fUtil.loadFiles = function () {
+        var stream = through.obj();
+        stream.write(expectedFile);
+        stream.end();
+        return stream;
+      };
+
+      version.get(function (err, data) {
+        assert.ok(err, 'Should have error');
+        assert.equal(data[filename], void 0, 'Version should not be set');
+        done();
+      });
+    });
   });
 
   describe('#Update(version)', function () {
@@ -63,6 +85,31 @@ describe('mversion(package.json)', function () {
 
         assert.equal('1.0.0', res.versions[filename]);
         assert.equal(res.message, 'Updated ' + filename);
+
+        done();
+      });
+    });
+
+    it('should give error if syntax error in package.json', function (done) {
+      var expectedFile = new File({
+        base: __dirname,
+        cwd: __dirname,
+        path: expectedPath,
+        contents: new Buffer('{ "version": "1.1.1" "foo": "bar }')
+      });
+
+      fUtil.loadFiles = function () {
+        var stream = through.obj();
+        stream.write(expectedFile);
+        stream.end();
+        return stream;
+      };
+
+      version.update('1.0.0', function (err, res) {
+        assert.ok(err);
+        assert.ok(err.message);
+        assert.equal(err.message, ' * fixtures/package.json: Unexpected string');
+        assert.equal(res.versions[filename], void 0);
 
         done();
       });

@@ -2,6 +2,7 @@
 
 var argv = process.argv.slice(2),
     chalk = require('chalk'),
+    path = require('path'),
     version = require('../version'),
     thisVersion = require('../package.json').version;
 
@@ -55,18 +56,28 @@ function update () {
         ? defaultMessage
         : parsedArguments.m;
   }
+
   version.update(updateOptions, function (err, data) {
-    if (err && !data) {
-      console.error("Failed:", err.message);
+    if (err) {
+      console.error(chalk.red('Failed updating:'));
+
+      if (!data) {
+        console.error(err.message);
+      } else {
+        console.error(constructError(
+          err.message,
+          data.updatedFiles,
+          updateOptions.commitMessage,
+          updateOptions.noPrefix,
+          data.newVersion
+        ));
+      }
       process.exit(1);
     }
 
-    console.log('New Version:', data.newVersion);
-    console.log(data.message);
-
-    if (err) {
-      console.log("Error:", err.message);
-      process.exit(1);
+    if (data && data.newVersion) {
+      console.log(chalk.green('Updated to new version: ') + chalk.yellow('v' + data.newVersion));
+      console.log(data.message);
     }
   });
 }
@@ -127,4 +138,27 @@ function isArgumentPassed () {
     }
   }
   return false;
+}
+
+function constructError (errors, files, commitMessage, isNoPrefix, updatedVersion) {
+  var commitFlag = commitMessage ? '-m "' + commitMessage + '"' : '';
+  var noPrefixFlag = isNoPrefix ? '--no-prefix' : '';
+
+  var ret = 'Some files contains errors:\n';
+
+  ret += chalk.red(errors);
+
+  if (files && files.length) {
+    ret += '\n\nOther files (' + files.map(function (file) {
+          return chalk.green(path.basename(file));
+        }).join(', ') + ') got updated to version ' + chalk.yellow('v' + updatedVersion) + '.\n\n';
+  }
+
+  if (!!commitMessage) {
+    ret += '\nThe changes were not commited, as there were errors.\n';
+  }
+
+  ret += 'Fix erros and try again to synchronize:\n';
+  ret += chalk.bold(chalk.yellow(['$ mversion', updatedVersion, commitFlag, noPrefixFlag].join(' ')));
+  return ret;
 }
