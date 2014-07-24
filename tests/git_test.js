@@ -88,17 +88,37 @@ describe('git', function () {
         return cb(null);
       };
 
-      git.commit = function (files, message, newVer, noPrefix, callback) {
+      git.commit = function (files, message, newVer, tagName, callback) {
         assert.equal(message, 'Message');
         assert.equal(newVer, '1.0.0');
         assert.equal(files[0], expectedPath);
-        assert.equal(noPrefix, false);
+        assert.equal(tagName, 'v1.0.0');
         return callback(null);
       };
 
       version.update({
         version: '1.0.0',
         commitMessage: 'Message'
+      }, function (err, data) {
+        assert.ifError(err);
+        done();
+      });
+    });
+
+    it('should be able to override tagName', function (done) {
+      git.isRepositoryClean = function (cb) {
+        return cb(null);
+      };
+
+      git.commit = function (files, message, newVer, tagName, callback) {
+        assert.equal(tagName, 'v1.0.0-src');
+        return callback(null);
+      };
+
+      version.update({
+        version: '1.0.0',
+        commitMessage: 'Message',
+        tagName: 'v%s-src'
       }, function (err, data) {
         assert.ifError(err);
         done();

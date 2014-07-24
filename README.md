@@ -54,14 +54,19 @@ Use -m to auto commit and tag. Apply optional message and
 use '%s' as placeholder for the updated version. Default
 message is 'v%s' where %s is replaced with new version.
 
---no-prefix (or -n for short) is used when you want to make
-a tag without v as prefix. This does not change behaviour of
+--tag (or -t for short) allows for overriding the tag name used. This does not
+change behaviour of the message, just the tag name. As with -m, all occurances of %s
+is replaced with the newly bumped version.
+
+--no-prefix (or -n for short) is a short hand for setting
+a tag name without v as prefix. This does not change behaviour of
 the message, just the tag name.
 
 --
 Ex: "mversion minor -m"
-Ex: "mversion minor -m 'Bumped to v%s'"
+Ex: "mversion minor -m 'Bumped to v%s' --tag 'v%s-src'"
 --
+
 ```
 
 ### Examples
@@ -177,13 +182,34 @@ Example:
 mversion.update({
   version: 'major',
   commitMessage: 'Bumps to version %s'
-})
+});
 ```
 
+#### `options.tagName : String`
+Default: `v%s`
+
+Allows for overriding of tagName. For instance adding a suffix and
+changeing tag to be named `v%s-src`.
+
+__Will only take affect if commitMessage is defined.__
+
+Occurances of `%s` in tag name will be replaced with new version number.
+
+Example:
+```javascript
+mversion.update({
+  version: 'major',
+  commitMessage: 'Bumps to version %s',
+  tagName: 'v%s-src'
+});
+// Might produce annotated tag named v1.0.0-src
+```
 
 #### `options.noPrefix : Boolean`
-If true and commitMessage is defined, the annotated tag created
-will not have 'v' as prefix.
+If true and commit message is defined, the annotated tag created
+will not have 'v' as prefix. This is a short hand for defining
+setting tag name to `%s`. Do not work if tag name is overriden
+(`options.tagName` is defined).
 
 Example:
 ```javascript
@@ -191,9 +217,19 @@ mversion.update({
   version: 'major',
   commitMessage: 'Bumps to version %s',
   noPrefix: true
-})
+});
+// Might produce annotated tag named 1.0.0
 ```
 
+This would be the same as:
+```javascript
+mversion.update({
+  version: 'major',
+  commitMessage: 'Bumps to version %s',
+  tagName: '%s'
+});
+// Might produce annotated tag named 1.0.0
+```
 
 ### `mversion.isPackageFile(filename) : Boolean`
 Checks whether or not the given filename is a valid package file type.

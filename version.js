@@ -64,6 +64,10 @@ exports.update = function (options, callback) {
     };
   }
 
+  if (!options.tagName) {
+    options.tagName = (options.noPrefix ? '' : 'v') + '%s';
+  }
+
   var ver = options.version || 'minor';
   var noPrefix = !!options.noPrefix;
   var commitMessage = options.commitMessage || void 0;
@@ -131,6 +135,7 @@ exports.update = function (options, callback) {
     });
 
     stored.on('end', function () {
+
       var errorMessage = null;
       if (errors.length) {
         errorMessage = errors.map(function (e) {
@@ -154,15 +159,14 @@ exports.update = function (options, callback) {
         return void 0;
       }
 
-      git.commit(files, commitMessage, updated.version, noPrefix, function (err) {
+      var tagName = options.tagName.replace('%s', updated.version).replace('"', '').replace("'", '');
+      git.commit(files, commitMessage, updated.version, tagName, function (err) {
         if (err) {
           callback(err, null);
           return void 0;
         }
 
-        ret.message += '\nCommited to git and created tag ';
-        if (!noPrefix) ret.message += 'v';
-        ret.message += updated.version;
+        ret.message += '\nCommited to git and created tag ' + tagName;
         callback(null, ret);
       });
     });
