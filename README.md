@@ -121,7 +121,7 @@ mversion.update({
     noPrefix: true
   }, function (err, data) { }) // Make tag without v prefix
 mversion.update('patch', function (err, data) { })
-mversion.update('build', function (err, data) { })
+mversion.update('prerelease', function (err, data) { })
 mversion.update({
     version: '0.0.1',
     commitMessage: 'Bumping version'
