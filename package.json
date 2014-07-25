@@ -20,13 +20,13 @@
     "mversion": "./bin/version"
   },
   "dependencies": {
-    "async": "^0.9.0",
     "vinyl-fs": "^0.3.4",
     "through2": "^1.0.0",
     "minimatch": "^0.4.0",
     "semver": "^2.3.1",
     "chalk": "^0.5.0",
-    "minimist": "^0.2.0"
+    "minimist": "^0.2.0",
+    "contra": "^1.6.8"
   },
   "devDependencies": {
     "mocha": "^1.20.1",
