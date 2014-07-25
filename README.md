@@ -246,6 +246,10 @@ assert.equal(mversion.isPackageFile('foojquery.json'), false);
 
 ## Changelog
 
+### 1.2.0
+1. Adds option to override tag name (options.tagName) in `#update`.
+2. Misc. refactoring and further testing.
+
 ### 1.1.0
 1. Improves CLI arguments. Now arguments is indifferent to order
 2. Adds better error handling and user feedback on partial version update (not all files).
