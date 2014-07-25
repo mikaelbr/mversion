@@ -1,4 +1,4 @@
-var version = require('../version'),
+var version = require('../'),
     assert = require('assert'),
     fs = require('fs'),
     vinylFs = require('vinyl-fs'),

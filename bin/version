@@ -3,7 +3,7 @@
 var argv = process.argv.slice(2),
     chalk = require('chalk'),
     path = require('path'),
-    version = require('../version'),
+    version = require('../'),
     thisVersion = require('../package.json').version;
 
 var parsedArguments = require('minimist')(argv, {

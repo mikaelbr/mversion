@@ -135,7 +135,6 @@ exports.update = function (options, callback) {
     });
 
     stored.on('end', function () {
-
       var errorMessage = null;
       if (errors.length) {
         errorMessage = errors.map(function (e) {
