@@ -7,6 +7,7 @@ var argv = process.argv.slice(2),
     thisVersion = require('../package.json').version;
 
 var parsedArguments = require('minimist')(argv, {
+  'string': ['t', 'tag'],
   'boolean': ['n']
 });
 var defaultMessage = "v%s";
@@ -55,6 +56,11 @@ function update () {
       parsedArguments.m === true
         ? defaultMessage
         : parsedArguments.m;
+  }
+
+  // Check for overriding tag name
+  if (isArgumentPassed('t', 'tag')) {
+    updateOptions.tagName = parsedArguments.t || parsedArguments.tag;
   }
 
   version.update(updateOptions, function (err, data) {
@@ -118,13 +124,19 @@ function usage () {
                 "message is 'v" + chalk.magenta("%s") + "' where " + chalk.magenta("%s") + " is replaced with new version.",
                 "",
 
-                chalk.yellow("--no-prefix") + " (or " + chalk.yellow("-n") + " for short) is used when you want to make",
-                "a tag without v as prefix. This does not change behaviour of",
+
+                chalk.yellow("--tag") + " (or " + chalk.yellow("-t") + " for short) allows for overriding the tag name used. This does not",
+                "change behaviour of the message, just the tag name. As with " + chalk.yellow("-m") + ", all occurances of " + chalk.magenta("%s"),
+                "is replaced with the newly bumped version.",
+                "",
+
+                chalk.yellow("--no-prefix") + " (or " + chalk.yellow("-n") + " for short) is a short hand for setting",
+                "a tag name without v as prefix. This does not change behaviour of",
                 "the message, just the tag name.",
                 "",
                 "--",
                 "Ex: \"mversion minor -m\"",
-                "Ex: \"mversion minor -m 'Bumped to v%s'\"",
+                "Ex: \"mversion minor -m 'Bumped to v%s' --tag 'v%s-src'\"",
                 "--",
                 ""
               ].join("\n"))
