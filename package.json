@@ -1,7 +1,7 @@
 {
   "name": "mversion",
   "version": "1.1.0",
-  "description": "A NPM and Bower module version handler",
+  "description": "A cross packaging manager module version handler/bumper",
   "main": "index.js",
   "scripts": {
     "test": "mocha tests/*_test.js -R spec",
