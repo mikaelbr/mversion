@@ -1,6 +1,6 @@
 {
   "name": "mversion",
-  "version": "1.2.0",
+  "version": "1.1.0",
   "description": "A NPM and Bower module version handler",
   "main": "index.js",
   "scripts": {
