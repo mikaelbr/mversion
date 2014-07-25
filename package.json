@@ -4,7 +4,8 @@
   "description": "A NPM and Bower module version handler",
   "main": "index.js",
   "scripts": {
-    "test": "mocha tests/*_test.js -R spec"
+    "test": "mocha tests/*_test.js -R spec",
+    "coverage": "istanbul cover node_modules/.bin/_mocha tests/*_test.js -- -u exports -R spec"
   },
   "repository": "https://github.com/mikaelbr/mversion",
   "keywords": [
@@ -29,6 +30,7 @@
   },
   "devDependencies": {
     "mocha": "^1.20.1",
-    "vinyl": "^0.2.3"
+    "vinyl": "^0.2.3",
+    "istanbul": "^0.3.0"
   }
 }
