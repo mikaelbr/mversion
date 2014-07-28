@@ -4,7 +4,7 @@ var chalk = require('chalk'),
     thisVersion = require('../package.json').version,
     usage = require('cli-usage');
 
-usage(__dirname + '/usage.md');
+usage(path.resolve(__dirname, '../usage.md'));
 
 var defaultMessage = "v%s";
 
