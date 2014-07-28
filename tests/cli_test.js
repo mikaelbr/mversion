@@ -1,18 +1,15 @@
 var mversion = require('../'),
-    usage = require('../bin/usage');
     currentVersion = require('../package.json').version;
     assert = require('assert');
 
 var originalMversion = mversion.update;
 var originalMversionGet = mversion.get;
-var originalLog = usage.log;
 var cli = require('../bin/cli');
 
 describe('cli', function() {
   afterEach(function () {
     mversion.update = originalMversion;
     mversion.get = originalMversionGet;
-    usage.log = originalLog;
   });
 
   it('should be able to take a version bump', function (done) {
@@ -157,34 +154,6 @@ describe('cli', function() {
     };
 
     cli(['major', '--tag=' + expectedString]);
-  });
-
-  it('should show help when using -h flag', function (done) {
-    var positive = false;
-    usage.log = function () {
-      positive = true;
-      assert.ok(true);
-    };
-
-    cli(['-h'], function (err) {
-      assert.ok(positive);
-      assert.ifError(err);
-      done();
-    });
-  });
-
-  it('should show help when using --help flag', function (done) {
-    var positive = false;
-    usage.log = function () {
-      positive = true;
-      assert.ok(true);
-    };
-
-    cli(['--help'], function (err) {
-      assert.ok(positive);
-      assert.ifError(err);
-      done();
-    });
   });
 
   it('should mversion version on -v', function (done) {

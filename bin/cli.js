@@ -2,8 +2,9 @@ var chalk = require('chalk'),
     path = require('path'),
     mversion = require('../'),
     thisVersion = require('../package.json').version,
-    usage = require('./usage');
+    usage = require('cli-usage');
 
+usage(__dirname + '/usage.md');
 
 var defaultMessage = "v%s";
 
@@ -50,11 +51,6 @@ module.exports = function (argv, loggers, processCallback) {
       version: parsedArguments._[0],
       noPrefix: !!parsedArguments.n || parsedArguments.prefix === false
     };
-
-    if (isArgumentPassed('h', 'help', '?')) {
-      usage.log(logger);
-      return processCallback();
-    }
 
     if (isArgumentPassed('v', 'version')) {
       logger('mversion v' + thisVersion);
