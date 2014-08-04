@@ -9,4 +9,5 @@ require('./cli')(argv, {
   errorLogger: errorLogger
 }, function (err) {
   if (err) process.exit(1);
+  process.exit(0);
 });

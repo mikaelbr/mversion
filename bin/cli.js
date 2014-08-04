@@ -1,6 +1,7 @@
 var chalk = require('chalk'),
     path = require('path'),
     files = require('../lib/files'),
+    scripts = require('../lib/scripts'),
     mversion = require('../'),
     thisVersion = require('../package.json').version,
     usage = require('cli-usage');
@@ -30,7 +31,14 @@ module.exports = function (argv, loggers, processCallback) {
     return get();
   }
 
-  return update();
+  if (!rc.scripts || !rc.scripts.preupdate) {
+    return update();
+  }
+
+  return scripts.run(
+    rc.scripts.preupdate,
+    scriptsCallback('preupdate', update)
+  );
 
   function get() {
     mversion.get(function (err, data) {
@@ -44,7 +52,7 @@ module.exports = function (argv, loggers, processCallback) {
         }
       }
 
-      if (err) processCallback(err);
+      processCallback(err);
     });
   }
 
@@ -93,6 +101,14 @@ module.exports = function (argv, loggers, processCallback) {
         logger(chalk.green('Updated to new version: ') + chalk.yellow('v' + data.newVersion));
         logger(data.message);
       }
+
+      if (rc.scripts && rc.scripts.postupdate) {
+        return scripts.run(
+          rc.scripts.postupdate,
+          scriptsCallback('postupdate', processCallback)
+        );
+      }
+      return processCallback();
     });
   }
 
@@ -104,6 +120,23 @@ module.exports = function (argv, loggers, processCallback) {
       }
     }
     return false;
+  }
+
+  function scriptsCallback (scriptType, cb) {
+    cb = cb || function () {};
+    return function (err, stdout) {
+      if (err) {
+        errorLogger(chalk.red('Error running ' + scriptType + ':'), err.message);
+        errorLogger(chalk.red('Stopping execution'));
+        return processCallback();
+      }
+
+      var str = stdout.toString('utf8');
+      if (str) {
+        logger(chalk.green('Output running ' + scriptType + ':'), str);
+      }
+      cb();
+    };
   }
 };
 

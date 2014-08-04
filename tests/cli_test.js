@@ -1,11 +1,13 @@
 var mversion = require('../'),
     currentVersion = require('../package.json').version;
     files = require('../lib/files');
+    scripts = require('../lib/scripts');
     assert = require('assert');
 
 var originalMversion = mversion.update;
 var originalMversionGet = mversion.get;
 var originalRc = files.getRC;
+var originalScripts = scripts.run;
 var cli = require('../bin/cli');
 
 describe('cli', function() {
@@ -187,6 +189,7 @@ describe('cli', function() {
 
     afterEach(function () {
       files.getRC = originalRc;
+      scripts.run = originalScripts;
     });
 
     it('should load default options from .mversionrc', function (done) {
@@ -228,7 +231,36 @@ describe('cli', function() {
       };
 
       cli(['major', '--tag', 'overriden']);
+    });
 
+    it('should execute pre- and postupdate scripts', function (done) {
+      files.getRC = function () {
+        return {
+          commitMessage: 'foo',
+          tagName: 'bar',
+          scripts: {
+            preupdate: 'pre',
+            postupdate: 'post'
+          }
+        };
+      };
+      var text = '';
+      scripts.run = function (script, cb) {
+        text += script;
+        cb(null, script);
+      };
+
+      mversion.update = function (options, cb) {
+        text += 'MIDDLE';
+        cb();
+      };
+
+      cli(['major'], {
+        logger: function () { }
+      }, function () {
+        assert.equal(text, 'preMIDDLEpost');
+        done();
+      });
     });
   });
 
