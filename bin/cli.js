@@ -1,5 +1,6 @@
 var chalk = require('chalk'),
     path = require('path'),
+    files = require('../lib/files'),
     mversion = require('../'),
     thisVersion = require('../package.json').version,
     usage = require('cli-usage');
@@ -15,6 +16,12 @@ module.exports = function (argv, loggers, processCallback) {
   }
   var logger = loggers.logger || console.log.bind(console);
   var errorLogger = loggers.errorLogger || console.error.bind(console);
+
+
+  var rc = files.getRC();
+  if (rc instanceof Error) {
+    errorLogger(chalk.red(rc));
+  }
 
   processCallback = processCallback || function () { };
 
@@ -47,10 +54,9 @@ module.exports = function (argv, loggers, processCallback) {
   }
 
   function update () {
-    var updateOptions = {
-      version: parsedArguments._[0],
-      noPrefix: !!parsedArguments.n || parsedArguments.prefix === false
-    };
+    var updateOptions = rc || {};
+    updateOptions.version = parsedArguments._[0];
+    updateOptions.noPrefix = !!parsedArguments.n || parsedArguments.prefix === false || !!updateOptions.noPrefix;
 
     if (isArgumentPassed('v', 'version')) {
       logger('mversion v' + thisVersion);

@@ -67,6 +67,12 @@ Ex: "mversion minor -m"
 Ex: "mversion minor -m 'Bumped to v%s' --tag 'v%s-src'"
 --
 
+## Default settings
+
+Create a `.mversionrc` file in your root with default settings
+as defined in the README.md of the project.
+
+
 ```
 
 ### Examples
@@ -94,6 +100,45 @@ Updated package.json
 Updated component.json
 Commited to git and created tag v1.0.0-rc1
 ```
+
+## Default Settings
+
+You can provide default settings by creating a `.mversionrc` file
+in the root of your project. This way you can define project
+specific tag names or commit messages.
+
+See API below to see what options are accepted.
+
+### Example `.mversionrc`
+
+```
+{
+  "commitMessage": "Bumped to %s",
+  "tagName": "v%s-src"
+}
+```
+
+Now, when doing this in the Terminal:
+```shell
+$ mversion minor
+```
+
+would now be the same as doing:
+
+```shell
+mversion minor -m "Bumped to %s" -t "v%s-src"
+```
+
+**Note:** CLI arguments take precedence over default options.
+So doing this (with the `.mversionrc` file as defined above):
+
+```shell
+mversion minor -m "Kicked version to %s"
+```
+
+Would leed to the commit message being `Kicked version to %s`,
+and tag name to be `v%s-src`.
+
 
 
 ## Usage API

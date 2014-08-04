@@ -39,6 +39,10 @@ As with `-m`, all occurances of `%s` are replaced with the newly bumped version.
 a tag name without `v` as prefix. This does not change behaviour of
 the message, just the tag name.
 
+## Default settings
+
+Create a `.mversionrc` file in your root with default settings
+as defined in the README.md of the project.
 
 ### Examples
 ```
