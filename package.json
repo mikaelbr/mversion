@@ -27,7 +27,8 @@
     "chalk": "^0.5.0",
     "minimist": "^0.2.0",
     "contra": "^1.6.8",
-    "cli-usage": "^0.1.1"
+    "cli-usage": "^0.1.1",
+    "rc": "^0.5.0"
   },
   "devDependencies": {
     "mocha": "^1.20.1",

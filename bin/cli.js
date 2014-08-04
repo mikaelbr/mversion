@@ -17,11 +17,7 @@ module.exports = function (argv, loggers, processCallback) {
   var logger = loggers.logger || console.log.bind(console);
   var errorLogger = loggers.errorLogger || console.error.bind(console);
 
-
   var rc = files.getRC();
-  if (rc instanceof Error) {
-    errorLogger(chalk.red(rc));
-  }
 
   processCallback = processCallback || function () { };
 
@@ -32,7 +28,6 @@ module.exports = function (argv, loggers, processCallback) {
 
   if (argv.length === 0) {
     return get();
-    return;
   }
 
   return update();
