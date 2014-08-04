@@ -139,7 +139,21 @@ mversion minor -m "Kicked version to %s"
 Would leed to the commit message being `Kicked version to %s`,
 and tag name to be `v%s-src`.
 
+## Hooks
 
+`.mversionrc` will also allow you to define hooks before (`preupdate`)
+and after (`postupdate`) version is updated.
+
+### Example
+
+```json
+{
+  "scripts": {
+    "preupdate": "echo 'Bumping version'",
+    "postupdate": "git push && git push --tags && npm publish"
+  }
+}
+```
 
 ## Usage API
 
@@ -290,6 +304,11 @@ assert.equal(mversion.isPackageFile('foojquery.json'), false);
 ```
 
 ## Changelog
+
+### 1.3.0
+1. Adds `.mversionrc` file for defining default settings
+2. Adds pre-/postupdate hooks allowing for commands to be run before and after version bump.
+   Useful for instance for doing `npm publish` or `git push`.
 
 ### 1.2.0
 1. Adds option to override tag name (options.tagName) in `#update`.
