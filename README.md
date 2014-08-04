@@ -104,8 +104,8 @@ Commited to git and created tag v1.0.0-rc1
 ## Default Settings
 
 You can provide default settings by creating a `.mversionrc` file
-in the root of your project. This way you can define project
-specific tag names or commit messages.
+in the root of your project (or in a directory higher up in the hierarchy).
+This way you can define project specific tag names or commit messages.
 
 See API below to see what options are accepted.
 
