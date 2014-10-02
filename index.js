@@ -113,7 +113,7 @@ exports.update = function (options, callback) {
         updated = updateJSON(contents, ver);
 
         if (!updated) {
-          this.emit('error', new Error('No valid version given.'))
+          this.emit('error', new Error('Version bump failed, ' + ver + ' is not valid version.'))
           return void 0;
         }
       }
