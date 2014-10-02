@@ -30,7 +30,7 @@ exports.get = function (callback) {
 exports.isPackageFile = fUtil.isPackageFile;
 
 var updateJSON = exports.updateJSON = function (obj, ver) {
-  ver = ver.toLowerCase();
+  ver = ver.toString().toLowerCase();
 
   var validVer = semver.valid(ver);
   obj = obj || {};
