@@ -305,6 +305,10 @@ assert.equal(mversion.isPackageFile('foojquery.json'), false);
 
 ## Changelog
 
+### 1.4.0
+2. Adds pre-/postcommit hooks allowing for commands to be run before and after
+   version bump git commit.
+
 ### 1.3.0
 1. Adds `.mversionrc` file for defining default settings
 2. Adds pre-/postupdate hooks allowing for commands to be run before and after version bump.
