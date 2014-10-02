@@ -19,20 +19,20 @@ have multiple packaging files (like ```bower.json```, ```component.json```,
 
 ## Usage CLI
 
-```
+```shell
 npm install -g mversion
 ```
 
 ### Examples
 
-```
+```shell
 $ mversion patch
 New Version: 0.0.6
 Updated package.json
 Updated component.json
 ```
 
-```
+```shell
 $ mversion 0.0.5 -m
 New Version: 0.0.5
 Updated package.json
@@ -41,7 +41,7 @@ Updated manifest.json
 Commited to git and created tag v0.0.5
 ```
 
-```
+```shell
 $ mversion 1.0.0-rc1 -m "Now in wopping v%s"
 New Version: 1.0.0-rc1
 Updated package.json
@@ -51,7 +51,7 @@ Commited to git and created tag v1.0.0-rc1
 
 ### Help
 
-```
+```shell
 $ mversion -h
 
 Usage: mversion [ <newversion> | major | minor | patch | prerelease ] [ -m <optional message> ] [ -n | --no-prefix ]
@@ -99,8 +99,6 @@ Ex: "mversion minor -m 'Bumped to v%s' --tag 'v%s-src'"
 
 Create a `.mversionrc` file in your root with default settings
 as defined in the README.md of the project.
-
-
 ```
 
 ## Default Settings
@@ -113,7 +111,7 @@ See API below to see what options are accepted.
 
 ### Example `.mversionrc`
 
-```
+```json
 {
   "commitMessage": "Bumped to %s",
   "tagName": "v%s-src"
@@ -161,7 +159,7 @@ and after (`postupdate`) version is updated.
 
 ## Usage API
 
-```
+```shell
 npm install mversion
 ```
 
