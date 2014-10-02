@@ -23,6 +23,34 @@ have multiple packaging files (like ```bower.json```, ```component.json```,
 npm install -g mversion
 ```
 
+### Examples
+
+```
+$ mversion patch
+New Version: 0.0.6
+Updated package.json
+Updated component.json
+```
+
+```
+$ mversion 0.0.5 -m
+New Version: 0.0.5
+Updated package.json
+Updated component.json
+Updated manifest.json
+Commited to git and created tag v0.0.5
+```
+
+```
+$ mversion 1.0.0-rc1 -m "Now in wopping v%s"
+New Version: 1.0.0-rc1
+Updated package.json
+Updated component.json
+Commited to git and created tag v1.0.0-rc1
+```
+
+### Help
+
 ```
 $ mversion -h
 
@@ -73,32 +101,6 @@ Create a `.mversionrc` file in your root with default settings
 as defined in the README.md of the project.
 
 
-```
-
-### Examples
-
-```
-$ mversion patch
-New Version: 0.0.6
-Updated package.json
-Updated component.json
-```
-
-```
-$ mversion 0.0.5 -m
-New Version: 0.0.5
-Updated package.json
-Updated component.json
-Updated manifest.json
-Commited to git and created tag v0.0.5
-```
-
-```
-$ mversion 1.0.0-rc1 -m "Now in wopping v%s"
-New Version: 1.0.0-rc1
-Updated package.json
-Updated component.json
-Commited to git and created tag v1.0.0-rc1
 ```
 
 ## Default Settings
