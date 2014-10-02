@@ -152,7 +152,9 @@ and after (`postupdate`) version is updated.
 {
   "scripts": {
     "preupdate": "echo 'Bumping version'",
-    "postupdate": "git push && git push --tags && npm publish"
+    "precommit": "sh ./someHook.sh",
+    "postcommit": "git push && git push --tags && npm publish",
+    "postupdate": "echo 'Updated version in manifest files'"
   }
 }
 ```
