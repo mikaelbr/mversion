@@ -262,6 +262,36 @@ describe('cli', function() {
         done();
       });
     });
+
+    it('should execute pre- and postcommit scripts', function (done) {
+      files.getRC = function () {
+        return {
+          commitMessage: 'foo',
+          tagName: 'bar',
+          scripts: {
+            precommit: 'preC',
+            postcommit: 'postC'
+          }
+        };
+      };
+      var text = '';
+      scripts.run = function (script, cb) {
+        text += script;
+        cb(null, script);
+      };
+
+      mversion.update = function (options, cb) {
+        text += 'MIDDLE';
+        cb();
+      };
+
+      cli(['major'], {
+        logger: function () { }
+      }, function () {
+        assert.equal(text, 'preCMIDDLEpostC');
+        done();
+      });
+    });
   });
 
 });

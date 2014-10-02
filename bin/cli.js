@@ -79,6 +79,10 @@ module.exports = function (argv, loggers, processCallback) {
       updateOptions.tagName = parsedArguments.t || parsedArguments.tag;
     }
 
+    if (updateOptions.commitMessage && rc.scripts && rc.scripts.precommit) {
+      scripts.run(rc.scripts.precommit, scriptsCallback('precommit'));
+    }
+
     mversion.update(updateOptions, function (err, data) {
       if (err) {
         errorLogger(chalk.red('Failed updating:'));
@@ -102,13 +106,29 @@ module.exports = function (argv, loggers, processCallback) {
         logger(data.message);
       }
 
-      if (rc.scripts && rc.scripts.postupdate) {
-        return scripts.run(
+      if (!rc.scripts || (!rc.scripts.postcommit && !rc.scripts.postupdate)) {
+        return processCallback();
+      }
+
+      if (!rc.scripts.postcommit) {
+        return runPostUpdate();
+      }
+
+      if (!updateOptions.commitMessage) {
+        return processCallback();
+      }
+
+      if (rc.scripts.postcommit) {
+        scripts.run(rc.scripts.postcommit, scriptsCallback('postcommit', runPostUpdate));
+      }
+
+      function runPostUpdate() {
+        if (!rc.scripts.postupdate) return processCallback();
+        scripts.run(
           rc.scripts.postupdate,
           scriptsCallback('postupdate', processCallback)
         );
       }
-      return processCallback();
     });
   }
 

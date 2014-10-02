@@ -1,6 +1,6 @@
 {
   "commitMessage": "Bumps to version v%s",
   "scripts": {
-    "postupdate": "git push && git push --tags"
+    "postcommit": "git push && git push --tags"
   }
 }

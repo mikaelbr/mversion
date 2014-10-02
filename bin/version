@@ -8,6 +8,8 @@ require('./cli')(argv, {
   logger: logger,
   errorLogger: errorLogger
 }, function (err) {
-  if (err) process.exit(1);
-  process.exit(0);
+  setTimeout(function () {
+    if (err) process.exit(1);
+    process.exit(0);
+  }, 0);
 });
