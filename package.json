@@ -22,13 +22,13 @@
   "dependencies": {
     "vinyl-fs": "^0.3.4",
     "through2": "^1.0.0",
-    "minimatch": "^0.4.0",
-    "semver": "^2.3.1",
     "chalk": "^0.5.0",
     "minimist": "^0.2.0",
     "contra": "^1.6.8",
     "cli-usage": "^0.1.1",
-    "rc": "^0.5.0"
+    "rc": "^0.5.0",
+    "semver": "^4.0.3",
+    "minimatch": "^1.0.0"
   },
   "devDependencies": {
     "mocha": "^1.20.1",
