@@ -152,7 +152,7 @@ and after (`postupdate`) version is updated.
     "preupdate": "echo 'Bumping version'",
     "precommit": "sh ./someHook.sh",
     "postcommit": "git push && git push --tags && npm publish",
-    "postupdate": "echo 'Updated version in manifest files'"
+    "postupdate": "echo 'Updated to version %s in manifest files'"
   }
 }
 ```
