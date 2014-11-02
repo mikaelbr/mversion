@@ -119,13 +119,16 @@ module.exports = function (argv, loggers, processCallback) {
       }
 
       if (rc.scripts.postcommit) {
-        scripts.run(rc.scripts.postcommit, scriptsCallback('postcommit', runPostUpdate));
+        scripts.run(
+          rc.scripts.postcommit.replace('%s', data.newVersion),
+          scriptsCallback('postcommit', runPostUpdate)
+        );
       }
 
       function runPostUpdate() {
         if (!rc.scripts.postupdate) return processCallback();
         scripts.run(
-          rc.scripts.postupdate,
+          rc.scripts.postupdate.replace('%s', data.newVersion),
           scriptsCallback('postupdate', processCallback)
         );
       }

@@ -252,7 +252,7 @@ describe('cli', function() {
 
       mversion.update = function (options, cb) {
         text += 'MIDDLE';
-        cb();
+        cb(null, { newVersion: '1.1.1' });
       };
 
       cli(['major'], {
@@ -282,13 +282,71 @@ describe('cli', function() {
 
       mversion.update = function (options, cb) {
         text += 'MIDDLE';
-        cb();
+        cb(null, { newVersion: '1.1.1' });
       };
 
       cli(['major'], {
         logger: function () { }
       }, function () {
         assert.equal(text, 'preCMIDDLEpostC');
+        done();
+      });
+    });
+
+    it('should replace %s to version in postcommit script', function (done) {
+      files.getRC = function () {
+        return {
+          commitMessage: 'foo',
+          tagName: 'bar',
+          scripts: {
+            postcommit: 'foo%sfoo'
+          }
+        };
+      };
+      var text = '';
+      scripts.run = function (script, cb) {
+        text += script;
+        cb(null, script);
+      };
+
+      mversion.update = function (options, cb) {
+        text += 'MIDDLE';
+        cb(null, { newVersion: '1.1.1' });
+      };
+
+      cli(['major'], {
+        logger: function () { }
+      }, function () {
+        assert.equal(text, 'MIDDLEfoo1.1.1foo');
+        done();
+      });
+    });
+
+    it('should replace %s to version in postupdate script', function (done) {
+      files.getRC = function () {
+        return {
+          commitMessage: 'foo',
+          tagName: 'bar',
+          scripts: {
+            postupdate: 'foo%sfoo'
+          }
+        };
+      };
+      var text = '';
+      scripts.run = function (script, cb) {
+        text += script;
+        cb(null, script);
+      };
+
+      mversion.update = function (options, cb) {
+        text += 'MIDDLE';
+        cb(null, { newVersion: '1.1.1' });
+      };
+
+      cli(['major'], {
+        logger: function () { }
+      }, function () {
+        assert.equal(text, 'MIDDLEfoo1.1.1foo');
         done();
       });
     });
