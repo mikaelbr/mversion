@@ -9,6 +9,7 @@ describe('files', function () {
       assert.equal(files.isPackageFile('package.json'), true);
       assert.equal(files.isPackageFile('component.json'), true);
       assert.equal(files.isPackageFile('bower.json'), true);
+      assert.equal(files.isPackageFile('composer.json'), true);
       assert.equal(files.isPackageFile('foobar.json'), false);
       assert.equal(files.isPackageFile('foobar.jquery.json'), true);
       assert.equal(files.isPackageFile('foojquery.json'), false);
