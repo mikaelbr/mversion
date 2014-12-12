@@ -29,7 +29,7 @@ exports.get = function (callback) {
 
 exports.isPackageFile = fUtil.isPackageFile;
 
-var versionAliases = {
+var versionAliases = exports.versionAliases = {
   "pa": "patch",
   "pr": "prerelease",
   "ma": "major",
