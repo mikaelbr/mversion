@@ -29,8 +29,24 @@ exports.get = function (callback) {
 
 exports.isPackageFile = fUtil.isPackageFile;
 
+var versionAliases = {
+  "pa": "patch",
+  "pr": "prerelease",
+  "ma": "major",
+  "mi": "minor",
+  // one char might be controversial, but it saves key strokes
+  "m": "major",
+  "p": "patch",
+  "i": "minor"
+};
+
 var updateJSON = exports.updateJSON = function (obj, ver) {
   ver = ver.toString().toLowerCase();
+
+  // check for aliases
+  if(ver in versionAliases){
+    ver = versionAliases[ver];
+  }
 
   var validVer = semver.valid(ver);
   obj = obj || {};

@@ -59,6 +59,7 @@ Usage: mversion [ <newversion> | major | minor | patch | prerelease ] [ -m <opti
 
 Update module version in either one or all of package.json,
 component.json, bower.json, manifest.json and *.jquery.json.
+```
 
 Run without arguments to get current version.
 
@@ -94,6 +95,27 @@ the message, just the tag name.
 Ex: "mversion minor -m"
 Ex: "mversion minor -m 'Bumped to v%s' --tag 'v%s-src'"
 --
+
+## Version aliases
+
+If you are lazy you can also use aliases for the version release type.
+
+```
+mversion p
+```
+
+The full list of aliases:
+
+```
+"pa": "patch",
+"pr": "prerelease",
+"ma": "major",
+"mi": "minor",
+// one char might be controversial, but it saves key strokes
+"m": "major",
+"p": "patch",
+"i": "minor"
+```
 
 ## Default settings
 
