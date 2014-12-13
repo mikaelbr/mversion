@@ -350,6 +350,46 @@ describe('cli', function() {
         done();
       });
     });
+
   });
 
+  describe('version aliases', function () {
+
+    var assertVersion = function(longName, shortName){
+      return function(done){
+        mversion.update = function (options, cb) {
+          assert.ok(options);
+          var version = mversion.updateJSON({version: "1.2.3"},options.version);
+          if(version == false || version.version === undefined){
+              assert.fail("unknown release type");
+          }
+          version = version.version;
+          switch(longName){
+            case "major":
+              assert.equal(version, "2.0.0");
+              break;
+            case "minor":
+              assert.equal(version, "1.3.0");
+              break;
+            case "patch":
+              assert.equal(version, "1.2.4");
+              break;
+            case "prerelease":
+              assert.equal(version, "1.2.4-0");
+              break;
+            default:
+              assert.fail("unknown release type");
+              break;
+          }
+          done();
+        };
+        cli([shortName]);
+      };
+    };
+    for(var key in mversion.versionAliases){
+      var longName = mversion.versionAliases[key];
+      it('should be able to accept release type aliases: ' + longName + ' as ' + key, assertVersion(longName, key));
+    }
+
+  });
 });
