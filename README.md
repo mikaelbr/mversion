@@ -329,8 +329,28 @@ assert.equal(mversion.isPackageFile('foojquery.json'), false);
 
 ## Changelog
 
+### 1.9.0
+1. Adds aliases for bumps (`p`, `m`, `i`) (#20)
+
+### 1.8.0
+1. Adds Composer support. (#19)
+
+### 1.7.0
+1. Replaces %s with `newVersion` in post scripts. Fixes #18
+
+### 1.6.1
+1. Adds support for git staging files with spaces. Fixes #17
+
+### 1.6.0
+1. Adds auto-updater to `mversion`.
+
+### 1.5.0
+1. Fixes issue with version bump being parsed as number and running string operations.
+2. Improves error given on invalid version input
+3. Bumps minimatch and semver to latest versions.
+
 ### 1.4.0
-2. Adds pre-/postcommit hooks allowing for commands to be run before and after
+1. Adds pre-/postcommit hooks allowing for commands to be run before and after
    version bump git commit.
 
 ### 1.3.0
