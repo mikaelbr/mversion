@@ -109,20 +109,14 @@ module.exports = function (argv, loggers, processCallback) {
       if (!rc.scripts || (!rc.scripts.postcommit && !rc.scripts.postupdate)) {
         return processCallback();
       }
-
-      if (!rc.scripts.postcommit) {
-        return runPostUpdate();
-      }
-
-      if (!updateOptions.commitMessage) {
-        return processCallback();
-      }
-
-      if (rc.scripts.postcommit) {
+      
+      if (rc.scripts.postcommit && updateOptions.commitMessage) {
         scripts.run(
           rc.scripts.postcommit.replace('%s', data.newVersion),
           scriptsCallback('postcommit', runPostUpdate)
         );
+      }else{
+        return runPostUpdate();
       }
 
       function runPostUpdate() {
