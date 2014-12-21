@@ -234,13 +234,15 @@ describe('cli', function() {
     });
 
     it('should execute pre- and postupdate scripts', function (done) {
+      // even if there is a postcommit script defined
       files.getRC = function () {
         return {
-          commitMessage: 'foo',
           tagName: 'bar',
           scripts: {
             preupdate: 'pre',
-            postupdate: 'post'
+            precommit: 'foo',
+            postupdate: 'post',
+            postcommit: 'foo'
           }
         };
       };
