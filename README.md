@@ -1,7 +1,7 @@
 mversion - A cross packaging manager module version handler/bumper
 ===
 
-[![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][depstat-image]][depstat-url]
+[![npm](https://img.shields.io/npm/v/mversion.svg?style=flat)](https://npmjs.com/package/mversion) [![Travis](https://img.shields.io/travis/mikaelbr/mversion.svg?style=flat)](https://travis-ci.org/mikaelbr/mversion) [![Gemnasium](https://img.shields.io/gemnasium/mikaelbr/mversion.svg?style=flat)](https://gemnasium.com/mikaelbr/mversion)
 
 Imitates [```npm version```](https://npmjs.org/doc/version.html) to
 also work on other packaging files. For those times you have either
@@ -377,12 +377,3 @@ assert.equal(mversion.isPackageFile('foojquery.json'), false);
 ## License
 
 [MIT License](http://en.wikipedia.org/wiki/MIT_License)
-
-[npm-url]: https://npmjs.org/package/mversion
-[npm-image]: http://img.shields.io/npm/v/mversion.svg?style=flat
-
-[travis-url]: http://travis-ci.org/mikaelbr/mversion
-[travis-image]: http://img.shields.io/travis/mikaelbr/mversion.svg?style=flat
-
-[depstat-url]: https://gemnasium.com/mikaelbr/mversion
-[depstat-image]: http://img.shields.io/gemnasium/mikaelbr/mversion.svg?style=flat
