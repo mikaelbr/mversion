@@ -80,7 +80,9 @@ module.exports = function (argv, loggers, processCallback) {
     }
 
     if (updateOptions.commitMessage && rc.scripts && rc.scripts.precommit) {
-      scripts.run(rc.scripts.precommit, scriptsCallback('precommit'));
+      updateOptions.precommit = function () {
+        scripts.run(rc.scripts.precommit, scriptsCallback('precommit'));
+      };
     }
 
     mversion.update(updateOptions, function (err, data) {

@@ -76,6 +76,7 @@ exports.update = function (options, callback) {
     options = {
       version: options,
       noPrefix: false,
+      precommit: function () { },
       commitMessage: void 0
     };
   }
@@ -87,6 +88,7 @@ exports.update = function (options, callback) {
   var ver = options.version || 'minor';
   var noPrefix = !!options.noPrefix;
   var commitMessage = options.commitMessage || void 0;
+  var precommitCallback = options.precommit || function () { };
   callback = callback || noop();
 
   (function (done) {
@@ -174,6 +176,7 @@ exports.update = function (options, callback) {
         return void 0;
       }
 
+      precommitCallback();
       var tagName = options.tagName.replace('%s', updated.version).replace('"', '').replace("'", '');
       git.commit(files, commitMessage, updated.version, tagName, function (err) {
         if (err) {

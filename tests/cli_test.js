@@ -283,6 +283,7 @@ describe('cli', function() {
       };
 
       mversion.update = function (options, cb) {
+        options.precommit();
         text += 'MIDDLE';
         cb(null, { newVersion: '1.1.1' });
       };
