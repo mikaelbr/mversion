@@ -19,6 +19,7 @@ describe('git', function () {
   var exec = cp.exec;
   var originalIsRepositoryClean = git.isRepositoryClean;
   var originalCommit = git.commit;
+  var originalCheckout = git.checkout;
 
   before(function () {
     vinylFs.dest = function () {
@@ -51,6 +52,7 @@ describe('git', function () {
   afterEach(function () {
     git.isRepositoryClean = originalIsRepositoryClean;
     git.commit = originalCommit;
+    git.checkout = originalCheckout;
 
     cp.exec = exec;
   });

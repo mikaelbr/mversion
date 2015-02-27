@@ -237,6 +237,7 @@ describe('cli', function() {
       // even if there is a postcommit script defined
       files.getRC = function () {
         return {
+          commitMessage: 'foo',
           tagName: 'bar',
           scripts: {
             preupdate: 'pre',
@@ -253,6 +254,7 @@ describe('cli', function() {
       };
 
       mversion.update = function (options, cb) {
+        options.precommit();
         text += 'MIDDLE';
         cb(null, { newVersion: '1.1.1' });
       };
@@ -260,7 +262,7 @@ describe('cli', function() {
       cli(['major'], {
         logger: function () { }
       }, function () {
-        assert.equal(text, 'preMIDDLEpost');
+        assert.equal(text, 'prefooMIDDLEfoopost');
         done();
       });
     });

@@ -76,7 +76,7 @@ exports.update = function (options, callback) {
     options = {
       version: options,
       noPrefix: false,
-      precommit: function () { },
+      precommit: void 0,
       commitMessage: void 0
     };
   }
@@ -88,7 +88,7 @@ exports.update = function (options, callback) {
   var ver = options.version || 'minor';
   var noPrefix = !!options.noPrefix;
   var commitMessage = options.commitMessage || void 0;
-  var precommitCallback = options.precommit || function () { };
+  var precommitCallback = options.precommit;
   callback = callback || noop();
 
   (function (done) {
@@ -176,17 +176,30 @@ exports.update = function (options, callback) {
         return void 0;
       }
 
-      precommitCallback();
-      var tagName = options.tagName.replace('%s', updated.version).replace('"', '').replace("'", '');
-      git.commit(files, commitMessage, updated.version, tagName, function (err) {
-        if (err) {
-          callback(err, null);
-          return void 0;
-        }
+      if (!precommitCallback) {
+        return doCommit();
+      }
 
-        ret.message += '\nCommited to git and created tag ' + tagName;
-        callback(null, ret);
+      precommitCallback(function (err) {
+        console.log("dsadsa");
+        if (err) {
+          return git.checkout();
+        }
+        doCommit();
       });
+
+      function doCommit () {
+        var tagName = options.tagName.replace('%s', updated.version).replace('"', '').replace("'", '');
+        git.commit(files, commitMessage, updated.version, tagName, function (err) {
+          if (err) {
+            callback(err, null);
+            return void 0;
+          }
+
+          ret.message += '\nCommited to git and created tag ' + tagName;
+          callback(null, ret);
+        });
+      }
     });
   });
   return this;

@@ -80,8 +80,8 @@ module.exports = function (argv, loggers, processCallback) {
     }
 
     if (updateOptions.commitMessage && rc.scripts && rc.scripts.precommit) {
-      updateOptions.precommit = function () {
-        scripts.run(rc.scripts.precommit, scriptsCallback('precommit'));
+      updateOptions.precommit = function (errorCb) {
+        scripts.run(rc.scripts.precommit, scriptsCallback('precommit', errorCb));
       };
     }
 
@@ -111,7 +111,7 @@ module.exports = function (argv, loggers, processCallback) {
       if (!rc.scripts || (!rc.scripts.postcommit && !rc.scripts.postupdate)) {
         return processCallback();
       }
-      
+
       if (rc.scripts.postcommit && updateOptions.commitMessage) {
         scripts.run(
           rc.scripts.postcommit.replace('%s', data.newVersion),
@@ -147,6 +147,7 @@ module.exports = function (argv, loggers, processCallback) {
       if (err) {
         errorLogger(chalk.red('Error running ' + scriptType + ':'), err.message);
         errorLogger(chalk.red('Stopping execution'));
+        cb(err);
         return processCallback();
       }
 
