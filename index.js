@@ -181,7 +181,6 @@ exports.update = function (options, callback) {
       }
 
       precommitCallback(function (err) {
-        console.log("dsadsa");
         if (err) {
           return git.checkout();
         }
