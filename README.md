@@ -179,6 +179,9 @@ and after (`postupdate`) version is updated.
 }
 ```
 
+If precommit fails (returns something other that `exit 0`) the commit will be
+checked out (removing the version bump changes).
+
 ## Usage API
 
 ```shell
