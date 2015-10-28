@@ -158,7 +158,7 @@ So doing this (with the `.mversionrc` file as defined above):
 mversion minor -m "Kicked version to %s"
 ```
 
-Would leed to the commit message being `Kicked version to %s`,
+Would lead to the commit message being `Kicked version to %s`,
 and tag name to be `v%s-src`.
 
 ## Hooks
