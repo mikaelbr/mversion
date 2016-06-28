@@ -108,7 +108,7 @@ describe('mversion(package.json)', function () {
       version.update('1.0.0', function (err, res) {
         assert.ok(err);
         assert.ok(err.message);
-        assert.equal(err.message, ` * fixtures${path.sep}package.json: Unexpected string`);
+        assert.equal(err.message, ' * fixtures' + path.sep + 'package.json: Unexpected string');
         assert.equal(res.versions[filename], void 0);
 
         done();
