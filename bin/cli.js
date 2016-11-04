@@ -143,18 +143,13 @@ module.exports = function (argv, loggers, processCallback) {
 
   function scriptsCallback (scriptType, cb) {
     cb = cb || function () {};
-    return function (err, stdout) {
-      if (err) {
-        errorLogger(chalk.red('Error running ' + scriptType + ':'), err.message);
+    return function (errCode) {
+      if (errCode) {
+        errorLogger(chalk.red('Error running ' + scriptType + ', script exited with code:'+ errCode));
         errorLogger(chalk.red('Stopping execution'));
-        cb(err);
-        return processCallback();
+        return processCallback(errCode);
       }
 
-      var str = stdout.toString('utf8');
-      if (str) {
-        logger(chalk.green('Output running ' + scriptType + ':'), str);
-      }
       cb();
     };
   }
