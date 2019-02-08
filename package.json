@@ -20,20 +20,20 @@
     "mversion": "./bin/version"
   },
   "dependencies": {
-    "chalk": "^2.4.1",
-    "cli-usage": "^0.1.2",
-    "contra": "^1.6.8",
-    "minimatch": "^3.0.3",
+    "chalk": "^2.4.2",
+    "cli-usage": "^0.1.8",
+    "contra": "^1.9.4",
+    "minimatch": "^3.0.4",
     "minimist": "^1.2.0",
-    "rc": "^1.1.6",
-    "semver": "^5.3.0",
-    "through2": "^2.0.3",
+    "rc": "^1.2.8",
+    "semver": "^5.6.0",
+    "through2": "^3.0.0",
     "update-notifier": "^2.5.0",
     "vinyl-fs": "^3.0.3"
   },
   "devDependencies": {
     "istanbul": "^0.4.5",
     "mocha": "^5.2.0",
-    "vinyl": "^2.0.1"
+    "vinyl": "^2.2.0"
   }
 }
