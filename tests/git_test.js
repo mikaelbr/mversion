@@ -99,7 +99,7 @@ describe("git", function () {
 
       cp.exec = function (cmd, extra, cb) {
         if (cmd.indexOf("-a") === -1) return cb(null);
-        assert.equal('git tag -a v1.0.0 -m "Message \\`touch file\\`"', cmd);
+        assert.equal('git tag -a "v1.0.0" -m "Message \\`touch file\\`"', cmd);
         done();
       };
 
@@ -187,7 +187,7 @@ describe("git", function () {
 
       cp.exec = function (cmd, extra, cb) {
         if (cmd.indexOf("-a") === -1) return cb(null);
-        assert.equal('git tag -a v1.0.0 -m "Message"', cmd);
+        assert.equal('git tag -a "v1.0.0" -m "Message"', cmd);
         done();
       };
 
@@ -204,7 +204,7 @@ describe("git", function () {
 
       cp.exec = function (cmd, extra, cb) {
         if (cmd.indexOf("-a") === -1) return cb(null);
-        assert.equal('git tag -a 1.0.0 -m "Message"', cmd);
+        assert.equal('git tag -a "1.0.0" -m "Message"', cmd);
         done();
       };
 
