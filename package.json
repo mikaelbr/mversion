@@ -28,7 +28,7 @@
     "rc": "^1.2.8",
     "semver": "^7.3.5",
     "through2": "^4.0.2",
-    "update-notifier": "^5.1.0",
+    "update-notifier": "^6.0.2",
     "vinyl-fs": "^3.0.3"
   },
   "devDependencies": {
